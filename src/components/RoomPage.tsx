@@ -250,11 +250,17 @@ export function RoomPage() {
       {/*  Desktop: side-by-side. Mobile: tabs control visibility  */}
       <main className="flex-1 flex overflow-hidden min-h-0">
 
-        {/* LEFT — Timer */}
+        {/* LEFT — Timer (+ videos on mobile) */}
         <div className={`
           flex-col flex-1 min-w-0 overflow-hidden
           ${mobileTab === "timer" ? "flex" : "hidden"} md:flex
         `}>
+          {/* Video feeds — mobile only, compact row above timer */}
+          <div className="md:hidden flex-shrink-0 grid grid-cols-2 gap-1.5 p-2 pb-0">
+            <VideoPanel stream={media.localStream} muted label="You"      connected cameraOn={media.cameraOn} mirror />
+            <VideoPanel stream={room.remoteStream} label="Opponent" connected={room.opponent.connected} cameraOn />
+          </div>
+
           <TimerPanel
             onSolveComplete={handleSolveComplete}
             onPenaltyChange={handlePenaltyChange}
@@ -278,8 +284,8 @@ export function RoomPage() {
             flex-shrink-0 p-2 sm:p-3 space-y-2
             ${mobileTab === "history" ? "hidden md:block" : ""}
           `}>
-            {/* Videos */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* Videos — desktop only (mobile shows them in timer tab) */}
+            <div className="hidden md:grid grid-cols-2 gap-2">
               <VideoPanel stream={media.localStream} muted label="You"      connected cameraOn={media.cameraOn} mirror />
               <VideoPanel stream={room.remoteStream} label="Opponent" connected={room.opponent.connected} cameraOn />
             </div>
