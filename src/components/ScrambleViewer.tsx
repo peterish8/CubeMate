@@ -62,9 +62,11 @@ export function ScrambleViewer({ scramble, event }: ScrambleViewerProps) {
   }, [scramble, event]);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full h-full rounded-lg overflow-hidden"
-    />
+    <div className="w-full h-full flex items-center justify-center">
+      <div
+        ref={containerRef}
+        className="h-full aspect-square rounded-lg overflow-hidden"
+      />
+    </div>
   );
 }
