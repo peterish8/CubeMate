@@ -324,8 +324,50 @@ export function RoomPage() {
         </div>
       </main>
 
+      {/* ── Compact match bar — timer tab only, mobile only ───── */}
+      {mobileTab === "timer" && (
+        <div className="md:hidden flex-shrink-0 border-t border-white/[0.06] bg-[#0d1018] px-4 py-2 flex items-center gap-3">
+          {/* Bo label */}
+          <span className="text-white/30 text-[10px] font-semibold uppercase tracking-wider flex-shrink-0">
+            Bo{matchN}
+          </span>
+
+          {/* My pips */}
+          <div className="flex gap-1 flex-1">
+            {Array.from({ length: Math.ceil(matchN / 2) }, (_, i) => (
+              <div key={i} className={`h-1.5 flex-1 rounded-full ${i < myWins ? "bg-blue-500" : "bg-white/[0.08]"}`} />
+            ))}
+          </div>
+
+          {/* Score */}
+          <div className="font-mono text-sm font-bold tabular-nums flex-shrink-0 min-w-[36px] text-center">
+            {matchWinner ? (
+              <span className={matchWinner === "me" ? "text-green-400" : "text-red-400"}>
+                {matchWinner === "me" ? "Win!" : "Loss"}
+              </span>
+            ) : (
+              <span className="text-white/50">{myWins}–{oppWins}</span>
+            )}
+          </div>
+
+          {/* Opp pips */}
+          <div className="flex gap-1 flex-1 justify-end">
+            {Array.from({ length: Math.ceil(matchN / 2) }, (_, i) => (
+              <div key={i} className={`h-1.5 flex-1 rounded-full ${i < oppWins ? "bg-red-500" : "bg-white/[0.08]"}`} />
+            ))}
+          </div>
+
+          {/* Reset */}
+          {(myMatchTimes.length > 0 || oppMatchTimes.length > 0) && (
+            <button onClick={handleResetMatch} className="flex-shrink-0 text-white/20 hover:text-white/50 transition-colors ml-1">
+              <ResetIcon className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* ── Mobile bottom tab bar ──────────────────────────────── */}
-      <nav className="md:hidden flex-shrink-0 border-t border-white/[0.08] bg-[#090b0f]/95 backdrop-blur-xl flex safe-bottom">
+      <nav className="md:hidden flex-shrink-0 border-t border-white/[0.08] bg-[#090b0f]/95 backdrop-blur-xl flex pb-safe">
         <MobileTabBtn icon={<TimerTabIcon />} label="Timer"   active={mobileTab === "timer"}   onClick={() => setMobileTab("timer")} />
         <MobileTabBtn icon={<MatchTabIcon />} label="Match"   active={mobileTab === "match"}   onClick={() => setMobileTab("match")} />
         <MobileTabBtn icon={<HistoryTabIcon />} label="History" active={mobileTab === "history"} onClick={() => setMobileTab("history")} />
@@ -549,6 +591,8 @@ const SettingsIcon    = ({ className }: { className?: string }) => <svg classNam
 const CopyIcon        = ({ className }: { className?: string }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>;
 const CheckIcon       = ({ className }: { className?: string }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>;
 const SyncIcon        = ({ className }: { className?: string }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>;
+
+const ResetIcon       = ({ className }: { className?: string }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>;
 
 const TimerTabIcon  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-full h-full"><circle cx="12" cy="13" r="8" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4l2.5 2.5M12 5V3m-2 0h4" /></svg>;
 const MatchTabIcon  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-full h-full"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
