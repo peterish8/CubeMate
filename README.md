@@ -1,95 +1,51 @@
 # CubeMate
 
-A **serverless**, **peer-to-peer** speedcubing timer for 1v1 races. No backend. No database. No accounts. Just open the app, share a room code, and race.
+A real-time speedcubing timer with P2P video rooms. Share a room code with a friend, race best-of-N matches, and watch each other's live video feeds — no account required, no solve data ever leaves your device.
 
-Built with **React + TypeScript + Tailwind CSS** and **WebRTC** (via [Trystero](https://github.com/dmotz/trystero)) for zero-server peer-to-peer connections.
+Built with **React + TypeScript + Tailwind CSS** and **WebRTC** (via [Trystero](https://github.com/dmotz/trystero)) for peer-to-peer connections.
 
 ---
 
 ## Features
 
-- **Zero-server P2P** — Uses BitTorrent DHT for signaling. No backend to maintain, no API keys, no cost.
-- **WCA scrambles** — Official 3×3 and 2×2 scrambles via [cubing.js](https://js.cubing.net/)
-- **3D scramble preview** — Interactive 3D cube visualization of the current scramble
-- **WCA inspection timer** — 15-second inspection with +2/DNF auto-penalty
-- **Spacebar-driven timer** — Hold → Release → Start pattern (just like real stackmat timers)
-- **Video + voice chat** — WebRTC media streams between both cubers
-- **Session-based solve history** — Every visit creates a new session. Sessions persist in localStorage
-- **Per-solve delete** — Delete individual solves without affecting opponent data
-- **Export** — Export any selection of sessions (or all) as CSV or JSON
-- **Stats** — Best, average, ao5, ao12 per session
-- **Penalty buttons** — +2, DNF, Clear (only shown after a solve stops)
-- **Opponent sync** — See opponent's timer state, event, and latest time in real-time
+- **P2P video rooms** — WebRTC video + audio between both cubers, peer-to-peer via WebTorrent DHT
+- **Best-of-N matches** — Bo1 / Bo3 / Bo5 / Bo7 with live win pips, score tracking, and a celebration overlay
+- **All 17 WCA events** — 3x3, 2x2, 4x4, 5x5, 6x6, 7x7, 3BLD, 4BLD, 5BLD, 3x3 OH, FMC, Megaminx, Pyraminx, Skewb, Square-1, Clock, 3x3 MBLD
+- **3D scramble viewer** — interactive cubing.js `TwistyPlayer` for every event
+- **WCA inspection** — optional 15-second countdown with +2 / DNF auto-penalty, audio cues, and vibration
+- **Spacebar timer** — hold → release → solve pattern (just like a stackmat)
+- **Session history** — solves grouped by session, with Best / Ao5 / Ao12 / Mean stats
+- **Penalty buttons** — +2, DNF, Clear after each solve
+- **Export** — download any selection of sessions as CSV or JSON
+- **Mobile-first layout** — video feeds + timer on the same screen; match score strip always visible above the tab bar
+- **Fully offline-capable** — solo practice works without any internet connection
 
 ---
 
-## How it works
+## Spacebar Flow
 
-### Spacebar flow
-
-| State | Screen | Action |
-|-------|--------|--------|
-| **Idle** | "READY" — timer at `0.00` | **Hold Space** |
-| **Ready** | "HOLDING" — green glow | **Release Space** → starts inspection (or solve if inspection is off) |
-| **Inspection** | Countdown `15` → `0` | **Hold Space** → "HOLDING" → **Release** → starts solve |
-| **Running** | Big green timer | **Press Space** → stops |
-| **Stopped** | Final time shown | **Press Space** → generates new scramble |
-
-No buttons needed. The entire left half of the screen is the timer system.
+| State | Display | Action |
+| --- | --- | --- |
+| **Idle** | `0.00` | Hold Space |
+| **Ready** | green glow | Release Space → starts inspection (or solve if disabled) |
+| **Inspection** | countdown `15 → 0` | Hold Space → Release → starts solve |
+| **Running** | live green timer | Press Space → stops |
+| **Stopped** | final time | Press Space → new scramble |
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Framework | React 18 + Vite + TypeScript |
-| Styling | Tailwind CSS |
-| Routing | React Router |
+| --- | --- |
+| Framework | React 18, Vite, TypeScript |
+| Styling | Tailwind CSS v3 |
+| Routing | React Router v6 |
 | Scrambles | cubing.js (WCA official) |
 | 3D Viewer | cubing.js TwistyPlayer |
-| P2P Signaling | Trystero (BitTorrent DHT) |
-| P2P Media | WebRTC (via Trystero) |
-| Storage | localStorage (session-grouped solves) |
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        CubeMate                              │
-│                                                              │
-│   ┌──────────────────────┐    ┌──────────────────────────┐  │
-│   │     LEFT (50%)       │    │       RIGHT (50%)        │  │
-│   │                      │    │                          │  │
-│   │  ┌──────────────┐   │    │  ┌───────┐ ┌─────────┐  │  │
-│   │  │ Scramble     │   │    │  │ Video │ │ Opponent│  │  │
-│   │  └──────────────┘   │    │  │ (you) │ │ Status  │  │  │
-│   │                      │    │  └───────┘ └─────────┘  │  │
-│   │     ┌──────────┐    │    │  ┌───────┐ ┌─────────┐  │  │
-│   │     │  TIMER   │    │    │  │ Video │ │ Session │  │  │
-│   │     │  0.00    │    │    │  │ (opp) │ │ Stats   │  │  │
-│   │     └──────────┘    │    │  └───────┘ └─────────┘  │  │
-│   │                      │    │                          │  │
-│   │  ┌──────────────┐   │    │  ┌────────────────────┐  │  │
-│   │  │ 3D Cube      │   │    │  │ Session History    │  │  │
-│   │  └──────────────┘   │    │  │ (scrollable)       │  │  │
-│   └──────────────────────┘    │  └────────────────────┘  │  │
-│                               └──────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-
-        P2P via Trystero (BitTorrent DHT signaling)
-```
-
-### Key design decisions
-
-- **No server** — Trystero uses the public BitTorrent DHT network for peer discovery. No Express/Socket.IO server to deploy or maintain.
-- **No database** — All solves live in the browser's localStorage, grouped by session.
-- **Pure reducer timer** — Timer state is a single `useReducer` with a pure reducer function. `performance.now()` is injected at the hook boundary so the reducer stays testable.
-- **Transport abstraction** — `ITransport` interface lets you swap signaling mechanisms (WebRTC DataChannel, Socket.IO, hybrid). Currently uses Trystero's built-in channels.
-- **Discriminated unions** — `TimerSnapshot` and `SyncMessage` are discriminated unions; TypeScript enforces exhaustive handling.
-- **Branded types** — `RoomCode`, `SolveId`, `SessionId` are branded strings to prevent mixing them up.
+| P2P | Trystero (WebTorrent DHT) |
+| Signaling fallback | Socket.IO (self-hosted) |
+| Storage | localStorage / sessionStorage |
 
 ---
 
@@ -99,39 +55,38 @@ No buttons needed. The entire left half of the screen is the timer system.
 # Install dependencies
 npm install
 
-# Run dev server
+# Frontend dev server (http://localhost:5173)
 npm run dev
+
+# Optional: Socket.IO signaling server (fallback for strict NAT)
+npm run server
 
 # Type check
 npm run typecheck
 
 # Production build
 npm run build
-
-# Preview production build locally
-npm run preview
 ```
 
-The app is **100% client-side**. No backend to start.
+The app is **100% client-side**. The signaling server is optional — WebTorrent DHT handles most connections without it.
 
 ---
 
 ## Deploy
 
-Since this is a static Vite app with no server, you can deploy to any static host:
+Static Vite build, no environment variables needed.
 
 ### Vercel (recommended)
 
 1. Push to GitHub
-2. Import repo into [Vercel](https://vercel.com)
-3. Framework preset: **Vite**
-4. Deploy
-
-That's it. No environment variables needed.
+2. Import into [Vercel](https://vercel.com), set framework preset to **Vite**
+3. Deploy — done
 
 ### Netlify / Cloudflare Pages / GitHub Pages
 
-Drop the `dist/` folder after running `npm run build`.
+Run `npm run build` and deploy the `dist/` folder.
+
+> The optional Socket.IO signaling server (`server/index.ts`) needs a Node host (e.g. Railway, Render, Fly.io). Without it, the app falls back to WebTorrent DHT signaling, which works for the vast majority of users.
 
 ---
 
@@ -140,72 +95,57 @@ Drop the `dist/` folder after running `npm run build`.
 ```
 src/
 ├── components/
-│   ├── LandingPage.tsx      # Home — create or join a room
-│   ├── RoomPage.tsx         # Main 50/50 layout
-│   ├── TimerPanel.tsx       # Left half: scramble + timer + cube
-│   ├── ScrambleViewer.tsx   # 3D TwistyPlayer cube
-│   ├── VideoPanel.tsx       # WebRTC video element
-│   ├── OpponentStatus.tsx   # Opponent state + winner banner
-│   ├── SessionStats.tsx     # Best / avg / ao5 / ao12 cards
-│   └── SessionsPanel.tsx    # Collapsible sessions, export, delete
+│   ├── LandingPage.tsx       Home — create or join a room
+│   ├── RoomPage.tsx          Main layout orchestrator + mobile tab nav
+│   ├── TimerPanel.tsx        Scramble + timer + event selector
+│   ├── ScrambleViewer.tsx    3D TwistyPlayer cube (dynamically imported)
+│   ├── VideoPanel.tsx        Single WebRTC video tile
+│   ├── OpponentStatus.tsx    Opponent state dot, last solve, win/loss banner
+│   ├── CelebrationOverlay.tsx  Full-screen match-end overlay
+│   ├── SessionStats.tsx      Best / Ao5 / Ao12 / Mean cards
+│   └── SessionsPanel.tsx     Solve history, export, delete
 ├── hooks/
-│   ├── useMedia.ts          # Camera + mic stream management
-│   ├── useSession.ts        # Session creation, solve CRUD, localStorage
-│   └── useRoomConnection.ts # Trystero P2P lifecycle
+│   ├── useMedia.ts           Camera + mic stream management
+│   ├── useSession.ts         Session lifecycle, solve CRUD, localStorage
+│   ├── useTimerMachine.ts    Pure useReducer timer state machine
+│   └── useRoomConnection.ts  Trystero P2P join/leave, sync messages
 ├── lib/
-│   ├── types.ts             # Branded types, discriminated unions, Result<T>
-│   ├── storage.ts           # localStorage with schema versioning + migration
-│   ├── timerEngine.ts       # formatTime, applyPenalty, playBeep, etc.
-│   ├── useTimerMachine.ts   # Pure reducer-based timer state machine
-│   ├── scramble.ts          # WCA scramble generation via cubing.js
-│   ├── stats.ts             # Best, avg, ao5, ao12 calculations
-│   └── exportSolves.ts      # CSV + JSON export
-├── styles.css               # Tailwind + custom utilities (glows, grid, etc.)
-└── App.tsx                  # Router setup
+│   ├── types.ts              Branded types, discriminated unions, SyncMessage
+│   ├── storage.ts            localStorage with schema v1 + migration
+│   ├── timerEngine.ts        formatTime, applyPenalty, beep utils
+│   ├── scramble.ts           WCA scramble generation
+│   ├── stats.ts              Best, mean, Ao5, Ao12
+│   ├── match.ts              computeMatch — best-of-N results + wins
+│   └── exportSolves.ts       CSV + JSON export
+├── styles.css                Tailwind + custom utilities
+└── App.tsx                   Router setup
+server/
+└── index.ts                  Socket.IO signaling server (optional fallback)
 ```
-
----
-
-## Session System
-
-Every time you enter a room, a **new session** is created ("Session 1", "Session 2", …).
-
-- Solves are tagged with a `sessionId`
-- Sessions and solves both persist in localStorage
-- Old solves from before the session system are auto-migrated into a "Legacy Session" on first load
-- You can:
-  - Expand/collapse sessions
-  - Delete individual solves
-  - Select multiple sessions and export only those
-  - Delete entire sessions (with confirmation)
-  - Clear all data (double-tap to confirm)
 
 ---
 
 ## Sync Protocol
 
-Timer state changes are sent as `SyncMessage` objects over Trystero's data channel:
+Timer events are broadcast as `SyncMessage` objects over Trystero's data channel — no server relay involved:
 
 ```ts
 type SyncMessage =
-  | { type: "EVENT_CHANGED"; event: CubeEvent }
-  | { type: "SCRAMBLE_CHANGED"; event: CubeEvent; scramble: string }
+  | { type: "EVENT_CHANGED";      event: CubeEvent }
+  | { type: "SCRAMBLE_CHANGED";   event: CubeEvent; scramble: string }
   | { type: "INSPECTION_STARTED"; at: number }
-  | { type: "TIMER_STARTED"; at: number }
-  | { type: "TIMER_STOPPED"; at: number; rawTimeMs: number; penalty: Penalty; finalTimeMs: number | null; solveId: SolveId }
-  | { type: "PENALTY_CHANGED"; penalty: Penalty; solveId: SolveId }
+  | { type: "TIMER_STARTED";      at: number }
+  | { type: "TIMER_STOPPED";      at: number; rawTimeMs: number; penalty: Penalty; finalTimeMs: number | null; solveId: SolveId }
+  | { type: "PENALTY_CHANGED";    penalty: Penalty; solveId: SolveId }
+  | { type: "MATCH_CONFIG";       n: MatchN }
+  | { type: "MATCH_RESET" }
 ```
-
-This keeps both cubers' UIs in sync without any server relay.
 
 ---
 
-## Browser Compatibility
+## Privacy
 
-- **Chrome / Edge / Firefox / Safari** — all supported
-- **WebRTC** is required for video/chat (all modern browsers)
-- **localStorage** is required for solve persistence
-- **cubing.js** may show warnings about `worker_threads` / `crypto` during build — these are Node polyfills externalized by Vite and do not affect the browser bundle
+Solve data is stored only in your browser's localStorage. Video and sync messages are sent peer-to-peer. The optional signaling server only exchanges WebRTC connection metadata (SDP / ICE candidates) and never sees solve times.
 
 ---
 
