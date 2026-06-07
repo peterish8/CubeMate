@@ -189,6 +189,7 @@
     min-height: 48px;
     padding: 12px 18px;
     border-radius: 999px;
+    touch-action: manipulation;
   }
 
   .btn-primary {
@@ -759,6 +760,8 @@
       radial-gradient(circle at 50% 12%, rgba(77, 182, 255, 0.08), transparent 22%);
     box-shadow: 0 32px 90px rgba(0, 0, 0, 0.34);
     backdrop-filter: blur(20px);
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .practice-timer-shell-system {
@@ -934,6 +937,7 @@
     justify-content: center;
     min-height: 0;
     padding: 10px 18px 0;
+    touch-action: none;
     transition: padding 320ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -942,7 +946,7 @@
   }
 
   .practice-timer-stage-touch {
-    touch-action: manipulation;
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
   }

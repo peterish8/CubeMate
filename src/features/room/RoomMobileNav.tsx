@@ -17,7 +17,7 @@ function MobileTabBtn({
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
+      className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 min-h-[44px] min-w-[44px] touch-manipulation transition-colors ${
         active ? "text-blue-400" : "text-white/30 hover:text-white/55"
       }`}
     >
