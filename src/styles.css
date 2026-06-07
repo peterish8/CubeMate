@@ -272,7 +272,13 @@
 
   .landing-band {
     position: relative;
-    padding-block: 72px;
+    padding-block: 32px;
+  }
+
+  @media (min-width: 768px) {
+    .landing-band {
+      padding-block: 72px;
+    }
   }
 
   .landing-band::before {
@@ -1671,6 +1677,25 @@
     font-size: 11px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+  }
+
+  /* ── Mobile-only overrides (max 767px) ── */
+  @media (max-width: 767px) {
+    .sticky-rail {
+      position: static;
+    }
+
+    .hero-cube-stage {
+      min-height: 240px;
+    }
+
+    .finale-cube-stage {
+      min-height: 220px;
+    }
+
+    .cinema-section::after {
+      display: none;
+    }
   }
 }
 
