@@ -8,43 +8,43 @@ const ROOM_CODE_REGEX = /^[A-Z0-9]{4,8}$/;
 
 const JOURNEY_STEPS = [
   {
-    marker: "00:00",
+    marker: "Step 01",
     title: "Enter the room",
-    body: "Queue fast or drop a private code.",
+    body: "Queue for random or paste a private code. No account, no setup — just start.",
   },
   {
-    marker: "00:15",
-    title: "Solve under pressure",
-    body: "Shared scramble. Live opponent. Round score visible.",
+    marker: "Step 02",
+    title: "Race in real time",
+    body: "Shared scramble. Opponent timer live on screen. Score updates the moment a solve lands.",
   },
   {
-    marker: "00:40",
-    title: "Run it back",
-    body: "Save the session and go again.",
+    marker: "Step 03",
+    title: "Requeue in one tap",
+    body: "Your session saves automatically. Hit next to race again or review your splits.",
   },
 ];
 
 const PATHS = [
   {
     label: "Random Match",
-    title: "Jump into a live race",
-    body: "One click. One opponent. One room.",
-    accent: "Immediate",
+    title: "One click, one opponent",
+    body: "Hit the queue and get matched in seconds. Shared scramble, live timer, round score always visible.",
+    accent: "Instant",
     action: "Find a cuber",
     kind: "queue" as const,
   },
   {
     label: "Private Room",
-    title: "Bring your own people",
-    body: "Clean room code for rematches and training.",
-    accent: "Controlled",
+    title: "Race your crew",
+    body: "Generate a room code, share it, start. Best-of-N format with synced scrambles and P2P video.",
+    accent: "Private",
     action: "Create room",
     kind: "create" as const,
   },
   {
     label: "Solo Practice",
-    title: "Train without waiting",
-    body: "Stay sharp between live races.",
+    title: "Train between matches",
+    body: "Full timer with inspection, WCA scrambles, session history, and averages you can export.",
     accent: "Focused",
     action: "Open practice",
     kind: "practice" as const,
@@ -53,18 +53,18 @@ const PATHS = [
 
 const SYSTEM_ARTIFACTS = [
   {
-    title: "Room flow",
-    body: "Room code first. Race state obvious.",
+    title: "Shared race rooms",
+    body: "Every room gets a short code. Share it in one tap. Both players see the same scramble, score, and round state — no sync lag.",
     type: "rooms" as const,
   },
   {
-    title: "Live pulse",
-    body: "State and round context should always feel alive.",
+    title: "Live opponent feed",
+    body: "Inspection start, solve finish, penalty applied — you see it the moment it happens. No polling, no delay.",
     type: "feed" as const,
   },
   {
-    title: "Training spread",
-    body: "Practice should compound into match confidence.",
+    title: "Sessions and averages",
+    body: "Every solve is logged automatically. Ao5, Ao12, mean, best, σ — tracked across sessions and exportable as CSV or JSON.",
     type: "stats" as const,
   },
 ];
@@ -261,11 +261,11 @@ export function LandingPage() {
       <section className="landing-band landing-band-soft cinema-section">
         <div className="section-wrap grid gap-10 md:grid-cols-2 md:gap-12 lg:grid-cols-[minmax(260px,0.72fr)_minmax(0,1.28fr)] lg:gap-14">
           <div className="sticky-rail space-y-4 self-start">
-            <p className="section-label">Entry paths</p>
+            <p className="section-label">Get started</p>
             <h2 className="display-title max-w-[11ch] text-3xl text-white sm:text-4xl">
-              Pick your lane.
+              Three ways to race.
             </h2>
-            <p className="max-w-md leading-7 text-white/52">Race now. Bring friends. Practice alone.</p>
+            <p className="max-w-md leading-7 text-white/52">Random queue, private room, or solo session — start whichever fits the moment.</p>
           </div>
 
           <div className="space-y-4">
@@ -302,11 +302,11 @@ export function LandingPage() {
               <div className="flex flex-col gap-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="max-w-xl">
-                    <p className="section-label">Race ritual</p>
+                    <p className="section-label">Live race</p>
                     <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-                      Best of 5 in room A9K7X2
+                      Best-of-5 · Round 3
                     </h2>
-                    <p className="mt-3 text-sm leading-7 text-white/52 sm:text-base">Round. State. Time. Nothing hidden.</p>
+                    <p className="mt-3 text-sm leading-7 text-white/52 sm:text-base">Score, state, and time — nothing hidden from either side.</p>
                   </div>
                   <span className="w-fit rounded-full border border-[rgba(77,182,255,0.24)] bg-[rgba(77,182,255,0.12)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#cdeaff]">
                     Round 3
@@ -335,11 +335,11 @@ export function LandingPage() {
 
           <div className="space-y-6">
             <div className="max-w-2xl space-y-3">
-              <p className="section-label">Match flow</p>
+              <p className="section-label">How a match flows</p>
               <h2 className="display-title text-3xl text-white sm:text-4xl">
-                Scroll the race.
+                Queue. Solve. Requeue.
               </h2>
-              <p className="text-white/52 leading-7">The sequence should feel immediate, not explained to death.</p>
+              <p className="text-white/52 leading-7">The whole loop in under a minute. No waiting rooms, no reload.</p>
             </div>
 
             <div className="grid gap-4 border-t border-white/10 pt-8">
@@ -360,11 +360,11 @@ export function LandingPage() {
       <section className="landing-band landing-band-soft cinema-section">
         <div className="section-wrap grid gap-6 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)]">
           <div className="sticky-rail space-y-4 p-1 sm:p-2 self-start">
-            <p className="section-label">The protocol</p>
+            <p className="section-label">Under the hood</p>
             <h2 className="display-title max-w-[10ch] text-3xl text-white sm:text-4xl">
-              Built for pressure, not admin.
+              Built for the race loop.
             </h2>
-            <p className="max-w-md leading-7 text-white/52">Every section should deepen the race loop.</p>
+            <p className="max-w-md leading-7 text-white/52">Every feature exists to make races start faster, run smoother, and feel more competitive.</p>
           </div>
 
           <div className="space-y-5">
@@ -385,27 +385,27 @@ export function LandingPage() {
         <div className="section-wrap">
           <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
             <div className="space-y-4">
-              <p className="section-label">What matters</p>
+              <p className="section-label">What you actually get</p>
               <h2 className="display-title max-w-[12ch] text-3xl text-white sm:text-4xl">
-                Fewer claims. More proof.
+                No account. No friction.
               </h2>
-              <p className="max-w-md leading-7 text-white/52">Room entry, live readability, practice carryover.</p>
+              <p className="max-w-md leading-7 text-white/52">Everything runs in the browser. Open a room, share the code, race — start to finish in under 30 seconds.</p>
             </div>
 
             <div className="space-y-4">
               <FeatureArtifactCard
-                title="Room code clean"
-                body="Private entry stays instant and obvious."
-                accent="A9K7X2"
+                title="Instant room entry"
+                body="6-character code. Share it anywhere. Your opponent joins in one tap — no download, no account."
+                accent="< 30s"
               />
               <FeatureArtifactCard
-                title="Head-to-head readable"
-                body="Opponent state and score stay visible."
-                accent="07.91"
+                title="Real-time opponent view"
+                body="See your opponent's timer, inspection state, and round score live — same as if they were sitting across from you."
+                accent="P2P"
               />
               <FeatureArtifactCard
-                title="Practice compounds"
-                body="Sessions and export feed the next race."
+                title="Practice that compounds"
+                body="Every solo session is logged. Your Ao5, Ao12, and best carry over so race warm-ups actually mean something."
                 accent="Ao5"
               />
             </div>
@@ -425,10 +425,10 @@ export function LandingPage() {
                 </div>
                 <div className="space-y-4">
                   <h2 className="display-title max-w-[10ch] text-4xl text-white sm:text-5xl lg:text-6xl">
-                    Enter the room. Own the round.
+                    Your next race is one tap away.
                   </h2>
                   <p className="max-w-xl text-base leading-7 text-white/58 sm:text-lg">
-                    CubeMate is for live races, private rematches, and solo sessions that feed the next match.
+                    Random match, private room, or solo session — no signup, no download, just open the link and race.
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
@@ -699,9 +699,9 @@ function JourneySequenceCard({
 
 function RoomStackArtifact() {
   const rooms = [
-    { label: "A9K7X2", state: "Live", accent: "bg-[rgba(113,240,182,0.18)] text-[#d9fff0]" },
-    { label: "Q2M4P8", state: "Waiting", accent: "bg-[rgba(77,182,255,0.18)] text-[#d8efff]" },
-    { label: "R7T5L1", state: "Private", accent: "bg-white/10 text-white/70" },
+    { label: "Race room", sub: "Best-of-5 · 3×3", state: "Live", accent: "bg-[rgba(113,240,182,0.18)] text-[#d9fff0]" },
+    { label: "Private room", sub: "Waiting for player 2", state: "Waiting", accent: "bg-[rgba(77,182,255,0.18)] text-[#d8efff]" },
+    { label: "Practice session", sub: "Solo · 12 solves", state: "Active", accent: "bg-white/10 text-white/70" },
   ];
 
   return (
@@ -719,8 +719,8 @@ function RoomStackArtifact() {
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="font-mono text-sm tracking-[0.24em] text-white">{room.label}</p>
-              <p className="mt-1 text-xs text-white/42">Best-of-5 race room</p>
+              <p className="text-sm font-medium text-white">{room.label}</p>
+              <p className="mt-1 text-xs text-white/42">{room.sub}</p>
             </div>
             <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${room.accent}`}>
               {room.state}
@@ -733,30 +733,31 @@ function RoomStackArtifact() {
 }
 
 function LiveFeedArtifact() {
-  const messages = [
-    "@cubemate-race You took round 2 in 7.91",
-    "@room-A9K7X2 Opponent started inspection",
-    "@session Practice history exported",
+  const events = [
+    { label: "Round 3 complete", detail: "Your solve · 7.91s saved" },
+    { label: "Opponent inspecting", detail: "15s inspection started" },
+    { label: "Score updated", detail: "2–1 · Your lead" },
   ];
 
   return (
-    <div className="space-y-3 font-mono text-xs">
-      <div className="flex items-center gap-2">
+    <div className="space-y-3 text-xs">
+      <div className="flex items-center gap-2 font-mono">
         <span className="h-2 w-2 rounded-full bg-[var(--cm-success)] animate-pulse" />
-        <span className="uppercase tracking-[0.24em] text-[var(--cm-success)]">Live feed</span>
+        <span className="uppercase tracking-[0.24em] text-[var(--cm-success)]">Live</span>
       </div>
-      {messages.map((message, index) => (
+      {events.map((event, index) => (
         <div
-          key={message}
-          className="rounded-[16px] border border-white/8 bg-white/[0.03] px-3 py-2 text-white/64"
+          key={event.label}
+          className="flex items-center justify-between gap-3 rounded-[16px] border border-white/[0.08] bg-white/[0.03] px-3 py-2.5"
           style={{ opacity: 1 - index * 0.18 }}
         >
-          {message}
+          <span className="font-medium text-white/80">{event.label}</span>
+          <span className="text-white/40">{event.detail}</span>
         </div>
       ))}
       <div className="flex items-center gap-2 text-white/36">
         <span className="inline-block h-3 w-1 rounded-full bg-[rgba(77,182,255,0.75)] animate-pulse" />
-        updating...
+        <span className="font-mono">syncing...</span>
       </div>
     </div>
   );
