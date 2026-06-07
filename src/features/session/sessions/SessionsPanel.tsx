@@ -90,23 +90,24 @@ export function SessionsPanel({
 
       <GlobalStatsBar allSolves={allSolves} />
 
-      {reversed.map((session) => {
+      {reversed.map((session, index) => {
         const sessionSolves = allSolves.filter((s) => s.sessionId === session.id);
         return (
-          <SessionRow
-            key={session.id}
-            session={session}
-            sessionSolves={sessionSolves}
-            currentSessionId={currentSessionId}
-            isExpanded={selection.expanded.has(session.id)}
-            isSelected={selection.selected.has(session.id)}
-            isMoreOpen={selection.moreStats.has(session.id)}
-            onToggleExpand={() => selection.toggleExpand(session.id)}
-            onToggleSelect={(e) => selection.toggleSelect(session.id, e)}
-            onToggleMoreStats={(e) => selection.toggleMoreStats(session.id, e)}
-            onDeleteSolve={onDeleteSolve}
-            onUpdatePenalty={onUpdatePenalty}
-          />
+          <div key={session.id} className={index === 0 ? "motion-list-item" : ""}>
+            <SessionRow
+              session={session}
+              sessionSolves={sessionSolves}
+              currentSessionId={currentSessionId}
+              isExpanded={selection.expanded.has(session.id)}
+              isSelected={selection.selected.has(session.id)}
+              isMoreOpen={selection.moreStats.has(session.id)}
+              onToggleExpand={() => selection.toggleExpand(session.id)}
+              onToggleSelect={(e) => selection.toggleSelect(session.id, e)}
+              onToggleMoreStats={(e) => selection.toggleMoreStats(session.id, e)}
+              onDeleteSolve={onDeleteSolve}
+              onUpdatePenalty={onUpdatePenalty}
+            />
+          </div>
         );
       })}
 

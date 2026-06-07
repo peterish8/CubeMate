@@ -16,7 +16,7 @@ export function VideoPanel({ stream, muted = false, label, connected = false, ca
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
     }
-  }, [stream]);
+  }, [cameraOn, stream]);
 
   const isLive = !!stream && cameraOn;
   const isConnected = connected || muted;
@@ -27,15 +27,16 @@ export function VideoPanel({ stream, muted = false, label, connected = false, ca
     }`}>
       {isLive ? (
         <video
+          key="live"
           ref={videoRef}
           autoPlay
           playsInline
           muted={muted}
-          className="w-full h-full object-cover"
+          className="motion-video-state w-full h-full object-cover"
           style={mirror ? { transform: "scaleX(-1)" } : undefined}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-[#0a0d14]">
+        <div key="offline" className="motion-video-state w-full h-full flex items-center justify-center bg-[#0a0d14]">
           <div className="flex flex-col items-center gap-2.5 text-white/20">
             <CameraOffIcon className="w-9 h-9" />
             <span className="text-xs tracking-wide">{stream ? "Camera off" : "No video"}</span>
@@ -45,7 +46,7 @@ export function VideoPanel({ stream, muted = false, label, connected = false, ca
 
       <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5 bg-gradient-to-t from-black/80 via-black/30 to-transparent">
         <div className="flex items-center gap-2">
-          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+          <div className={`motion-status-dot w-1.5 h-1.5 rounded-full flex-shrink-0 ${
             isConnected ? "bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)]" : "bg-white/20"
           }`} />
           <span className="text-white/70 text-xs font-medium tracking-wide">{label}</span>

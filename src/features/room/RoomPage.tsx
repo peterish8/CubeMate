@@ -102,7 +102,7 @@ export function RoomPage() {
   const winsNeeded = Math.ceil(matchLive.matchN / 2);
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-[#090b0f] overflow-hidden overscroll-none">
+    <div className="motion-enter-fast h-[100dvh] flex flex-col bg-[#090b0f] overflow-hidden overscroll-none">
       {matchLive.showCelebration && matchLive.matchWinner && (
         <CelebrationOverlay
           winner={matchLive.matchWinner}
@@ -116,13 +116,20 @@ export function RoomPage() {
       )}
 
       {pairing.findingNext && (
-        <div className="flex-shrink-0 bg-blue-950/50 border-b border-blue-500/20 px-4 py-2 text-blue-200/90 text-xs text-center">
+        <div
+          className="motion-notice flex-shrink-0 bg-blue-950/50 border-b border-blue-500/20 px-4 py-2 text-blue-200/90 text-xs text-center"
+          aria-live="polite"
+        >
           Finding next cuber…
         </div>
       )}
 
       {skipNotice && (
-        <div className="flex-shrink-0 bg-amber-900/30 border-b border-amber-500/20 px-4 py-1.5 text-amber-300/80 text-xs text-center">
+        <div
+          className="motion-notice flex-shrink-0 bg-amber-900/30 border-b border-amber-500/20 px-4 py-1.5 text-amber-300/80 text-xs text-center"
+          role="status"
+          aria-live="polite"
+        >
           {skipNotice}
         </div>
       )}
@@ -153,6 +160,7 @@ export function RoomPage() {
 
       {showSettings && (
         <RoomSettingsSheet
+          key="settings-sheet"
           inspectionEnabled={inspectionEnabled}
           soundEnabled={soundEnabled}
           vibrationEnabled={vibrationEnabled}
@@ -172,7 +180,7 @@ export function RoomPage() {
 
       <main className="flex-1 flex overflow-hidden min-h-0">
         <div
-          className={`flex-col flex-1 min-w-0 overflow-hidden ${mobileTab === "timer" ? "flex" : "hidden"} md:flex`}
+          className={`flex-col flex-1 min-w-0 overflow-hidden ${mobileTab === "timer" ? "motion-tab-panel flex" : "hidden"} md:flex`}
         >
           <div className="md:hidden flex-shrink-0 grid grid-cols-2 gap-1.5 p-2 pb-0">
             <VideoPanel stream={media.localStream} muted label="You" connected cameraOn={media.cameraOn} mirror />
@@ -192,7 +200,7 @@ export function RoomPage() {
         </div>
 
         <div
-          className={`flex-col flex-1 min-w-0 border-white/[0.07] overflow-hidden ${mobileTab === "timer" ? "hidden" : "flex"} md:flex md:border-l`}
+          className={`flex-col flex-1 min-w-0 border-white/[0.07] overflow-hidden ${mobileTab === "timer" ? "hidden" : "motion-tab-panel flex"} md:flex md:border-l`}
         >
           <div
             className={`flex-shrink-0 p-2 sm:p-3 space-y-2 ${mobileTab === "history" ? "hidden md:block" : ""}`}

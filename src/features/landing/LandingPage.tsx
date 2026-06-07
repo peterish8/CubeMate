@@ -123,7 +123,7 @@ export function LandingPage() {
           <div className="hero-stage-beams" />
 
           <div className="section-wrap">
-            <header className="relative z-[2] flex items-center justify-between gap-4 py-4 sm:py-6 text-sm">
+            <header className="relative z-[2] flex items-center justify-between gap-4 py-6 text-sm">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05]">
                   <CubeGlyph className="h-5 w-5 text-[#8cd8ff]" />
@@ -149,15 +149,15 @@ export function LandingPage() {
               </div>
             </header>
 
-            <div className="relative z-[1] grid gap-8 py-6 sm:py-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:py-20">
+            <div className="relative z-[1] grid gap-8 py-10 sm:py-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:py-20">
               <div className="relative z-[2] flex flex-col justify-center gap-7">
                 <div className="space-y-5">
-                  <div className="accent-chip w-fit">
+                  <div className="motion-hero-item accent-chip w-fit">
                     <span className="h-2 w-2 rounded-full bg-[var(--cm-success)] animate-pulse" />
                     Live speedcubing arena
                   </div>
 
-                  <div className="space-y-5">
+                  <div className="motion-hero-item space-y-5" style={{ animationDelay: "90ms" }}>
                     <h1 className="display-title max-w-[10ch] text-5xl text-white sm:text-6xl lg:text-[5.35rem]">
                       Turn every solve into a <span className="text-gradient-blue">cinematic race.</span>
                     </h1>
@@ -167,14 +167,14 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="motion-hero-item flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "180ms" }}>
                   <button
                     onClick={handleFindCuber}
                     disabled={pairing.isQueueActive}
                     className="btn-primary px-6 text-sm sm:text-base"
                   >
                     <UsersIcon className="h-4 w-4" />
-                    {pairing.isQueueActive ? "Finding a cuber..." : "Find Random Cuber"}
+                    {pairing.isQueueActive ? <SearchingLabel /> : "Find Random Cuber"}
                   </button>
                   <button onClick={handleCreate} className="btn-secondary px-6 text-sm sm:text-base">
                     <PlusIcon className="h-4 w-4" />
@@ -182,7 +182,10 @@ export function LandingPage() {
                   </button>
                 </div>
 
-                <div className="flex flex-wrap gap-3 border-t border-white/10 pt-4 sm:pt-5">
+                <div
+                  className="motion-hero-item flex flex-wrap gap-3 border-t border-white/10 pt-4 sm:pt-5"
+                  style={{ animationDelay: "260ms" }}
+                >
                   {HERO_SIGNALS.map((signal) => (
                     <span key={signal} className="signal-chip">
                       {signal}
@@ -190,7 +193,7 @@ export function LandingPage() {
                   ))}
                 </div>
 
-                <div className="join-strip max-w-2xl">
+                <div className="motion-hero-item join-strip max-w-2xl" style={{ animationDelay: "320ms" }}>
                   <div className="flex items-center justify-between gap-3">
                     <p className="section-label">Join by room code</p>
                     <p className="text-xs text-white/36">4-8 chars</p>
@@ -229,7 +232,7 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="hero-cube-stage hidden lg:flex">
+              <div className="motion-hero-item hero-cube-stage" style={{ animationDelay: "140ms" }}>
                 <div className="hero-cube-atmosphere" />
                 <div className="hero-cube-shadow" />
                 <div className="hero-cube-reflection" />
@@ -294,7 +297,7 @@ export function LandingPage() {
 
       <section className="landing-band landing-band-quiet cinema-section">
         <div className="section-wrap grid gap-8 lg:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
-          <div className="sticky-rail mb-4 lg:mb-0">
+          <div className="sticky-rail">
             <div className="artifact-panel stage-panel p-4 sm:p-5 lg:p-6">
               <div className="flex flex-col gap-6">
                 <div className="flex items-start justify-between gap-4">
@@ -430,7 +433,7 @@ export function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <button onClick={handleFindCuber} disabled={pairing.isQueueActive} className="btn-primary px-7">
-                    {pairing.isQueueActive ? "Finding a cuber..." : "Find Random Cuber"}
+                    {pairing.isQueueActive ? <SearchingLabel /> : "Find Random Cuber"}
                   </button>
                   <button onClick={handleCreate} className="btn-secondary px-7">
                     Create Private Room
@@ -470,7 +473,7 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="finale-cube-stage hidden lg:flex">
+              <div className="finale-cube-stage">
                 <div className="finale-cube-light" />
                 <div className="finale-cube-shadow" />
                 <CinematicCube grand />
@@ -615,7 +618,7 @@ function ProtocolArtifact({
           <h3 className="text-2xl font-semibold tracking-tight text-white">{title}</h3>
           <p className="text-sm leading-7 text-white/62 sm:text-base">{body}</p>
         </div>
-        <div className="hidden lg:block rounded-[24px] border border-white/10 bg-[rgba(4,8,14,0.76)] p-4">
+        <div className="rounded-[24px] border border-white/10 bg-[rgba(4,8,14,0.76)] p-4">
           {type === "rooms" ? <RoomStackArtifact /> : type === "feed" ? <LiveFeedArtifact /> : <StatsArtifact />}
         </div>
       </div>
@@ -657,7 +660,7 @@ function EntryPathLane({
         </div>
 
         <div className="entry-lane-aside">
-          <p className="hidden sm:block font-[Sora] text-4xl font-bold tracking-[-0.08em] text-white/16">{accent}</p>
+          <p className="font-[Sora] text-4xl font-bold tracking-[-0.08em] text-white/16">{accent}</p>
           <button onClick={onAction} className="btn-secondary px-5 text-sm">
             {actionLabel}
           </button>
@@ -847,6 +850,23 @@ function ScoreBlock({ label, value }: { label: string; value: string }) {
       <p className="text-[10px] uppercase tracking-[0.22em] text-white/38">{label}</p>
       <p className="mt-2 text-lg font-semibold text-white">{value}</p>
     </div>
+  );
+}
+
+function SearchingLabel() {
+  return (
+    <span className="inline-flex items-center gap-2" role="status" aria-live="polite">
+      Finding a cuber
+      <span className="inline-flex items-end gap-0.5" aria-hidden="true">
+        {[0, 1, 2].map((index) => (
+          <span
+            key={index}
+            className="motion-search-dot h-1 w-1 rounded-full bg-current"
+            style={{ "--motion-delay": `${index * 120}ms` } as React.CSSProperties}
+          />
+        ))}
+      </span>
+    </span>
   );
 }
 

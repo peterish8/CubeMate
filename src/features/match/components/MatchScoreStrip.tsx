@@ -26,7 +26,9 @@ export function MatchScoreStrip({
         {Array.from({ length: Math.ceil(matchN / 2) }, (_, i) => (
           <div
             key={i}
-            className={`h-1.5 flex-1 rounded-full ${i < myWins ? "bg-blue-500" : "bg-white/[0.08]"}`}
+            className={`h-1.5 flex-1 rounded-full ${i < myWins ? "bg-blue-500" : "bg-white/[0.08]"} ${
+              i === myWins - 1 ? "motion-score-segment" : ""
+            }`}
           />
         ))}
       </div>
@@ -37,7 +39,7 @@ export function MatchScoreStrip({
             {matchWinner === "me" ? "Win!" : "Loss"}
           </span>
         ) : (
-          <span className="text-white/50">
+          <span key={`${myWins}-${oppWins}`} className="motion-score text-white/50" aria-live="polite">
             {myWins}–{oppWins}
           </span>
         )}
@@ -47,7 +49,9 @@ export function MatchScoreStrip({
         {Array.from({ length: Math.ceil(matchN / 2) }, (_, i) => (
           <div
             key={i}
-            className={`h-1.5 flex-1 rounded-full ${i < oppWins ? "bg-red-500" : "bg-white/[0.08]"}`}
+            className={`h-1.5 flex-1 rounded-full ${i < oppWins ? "bg-red-500" : "bg-white/[0.08]"} ${
+              i === oppWins - 1 ? "motion-score-segment" : ""
+            }`}
           />
         ))}
       </div>

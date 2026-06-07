@@ -17,11 +17,19 @@ function MobileTabBtn({
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 min-h-[44px] min-w-[44px] touch-manipulation transition-colors ${
+      aria-current={active ? "page" : undefined}
+      className={`motion-press relative flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
         active ? "text-blue-400" : "text-white/30 hover:text-white/55"
       }`}
     >
-      <div className="w-5 h-5">{icon}</div>
+      <span
+        className={`absolute top-0 h-0.5 w-10 rounded-full bg-[var(--cm-accent)] transition-all duration-300 ${
+          active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+        }`}
+      />
+      <div className={`w-5 h-5 transition-transform duration-200 ${active ? "-translate-y-0.5" : ""}`}>
+        {icon}
+      </div>
       <span className="text-[9px] font-semibold tracking-wide uppercase">{label}</span>
     </button>
   );

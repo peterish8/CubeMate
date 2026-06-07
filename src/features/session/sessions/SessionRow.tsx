@@ -166,6 +166,7 @@ export function SessionRow({
                     solve={solve}
                     num={num}
                     isBest={isBest}
+                    isNewest={isCurrent && i === 0}
                     eventLabel={EVENT_LABEL[solve.event] ?? solve.event}
                     onDelete={() => onDeleteSolve(solve.id)}
                     onPenalty={(p) => onUpdatePenalty(solve.id, p)}

@@ -27,9 +27,9 @@ export function ConnectionBadge({
           : "text-red-400/70";
 
   return (
-    <div className="hidden sm:flex items-center gap-1.5">
-      <div className={`w-1.5 h-1.5 rounded-full ${dot}`} />
-      <span className={`text-[11px] font-medium ${text}`}>{label}</span>
+    <div className="hidden sm:flex items-center gap-1.5" role="status" aria-live="polite">
+      <div className={`motion-status-dot w-1.5 h-1.5 rounded-full ${dot}`} />
+      <span key={state} className={`motion-enter-fast text-[11px] font-medium ${text}`}>{label}</span>
       {onReconnect && (
         <button
           type="button"
