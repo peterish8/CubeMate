@@ -132,26 +132,27 @@ export function PracticePage() {
           />
         </aside>
 
-        {historyOpen && (
-          <div className="practice-history-drawer">
-            <div className="practice-history-drawer-backdrop motion-enter-fast" onClick={() => setHistoryOpen(false)} />
-            <div className="practice-history-drawer-panel motion-enter-fast">
-              <PracticeHistoryRail
-                currentSessionId={session.currentSessionId}
-                currentSolves={session.solves}
-                allSolves={session.allSolves}
-                sessions={session.sessions}
-                activeEvent={activeEvent}
-                soloLevelingMode={soloLevelingMode}
-                onDeleteSolve={session.deleteSolve}
-                onUpdatePenalty={session.updatePenalty}
-                onDeleteSessions={session.deleteSessions}
-                onClearAll={session.clearAll}
-              />
-            </div>
-          </div>
-        )}
       </main>
+
+      {historyOpen && (
+        <div className="practice-history-drawer">
+          <div className="practice-history-drawer-backdrop motion-enter-fast" onClick={() => setHistoryOpen(false)} />
+          <div className="practice-history-drawer-panel motion-enter-fast">
+            <PracticeHistoryRail
+              currentSessionId={session.currentSessionId}
+              currentSolves={session.solves}
+              allSolves={session.allSolves}
+              sessions={session.sessions}
+              activeEvent={activeEvent}
+              soloLevelingMode={soloLevelingMode}
+              onDeleteSolve={session.deleteSolve}
+              onUpdatePenalty={session.updatePenalty}
+              onDeleteSessions={session.deleteSessions}
+              onClearAll={session.clearAll}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
