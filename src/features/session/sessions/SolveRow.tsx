@@ -7,16 +7,19 @@ export interface SolveRowProps {
   solve: Solve;
   num: number;
   isBest: boolean;
+  isNewest?: boolean;
   eventLabel: string;
   onDelete: () => void;
   onPenalty: (p: Penalty) => void;
 }
 
-export function SolveRow({ solve, num, isBest, eventLabel, onDelete, onPenalty }: SolveRowProps) {
+export function SolveRow({ solve, num, isBest, isNewest = false, eventLabel, onDelete, onPenalty }: SolveRowProps) {
   const [showScramble, setShowScramble] = useState(false);
 
   return (
-    <div className={`group transition-colors ${isBest ? "bg-cyan-500/[0.04]" : "hover:bg-white/[0.02]"}`}>
+    <div className={`group transition-colors ${isNewest ? "motion-list-item" : ""} ${
+      isBest ? "bg-cyan-500/[0.04]" : "hover:bg-white/[0.02]"
+    }`}>
       <div className="flex items-center gap-3 px-4 py-2.5">
         <span className="text-white/20 font-mono text-[11px] w-5 text-right flex-shrink-0 tabular-nums">
           {num}

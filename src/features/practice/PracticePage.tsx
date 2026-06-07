@@ -36,7 +36,7 @@ export function PracticePage() {
   };
 
   return (
-    <div className={`overscroll-none ${soloLevelingMode ? "practice-page-shell practice-page-shell-system" : "practice-page-shell"}`}>
+    <div className={soloLevelingMode ? "motion-enter-fast practice-page-shell practice-page-shell-system" : "motion-enter-fast practice-page-shell"}>
       <div className="practice-page-grid" />
       {soloLevelingMode && <div className="practice-system-scanlines" aria-hidden="true" />}
       {systemFlashActive && <div className="practice-system-flash" aria-hidden="true" />}
@@ -132,8 +132,8 @@ export function PracticePage() {
 
         {historyOpen && (
           <div className="practice-history-drawer">
-            <div className="practice-history-drawer-backdrop" onClick={() => setHistoryOpen(false)} />
-            <div className="practice-history-drawer-panel">
+            <div className="practice-history-drawer-backdrop motion-enter-fast" onClick={() => setHistoryOpen(false)} />
+            <div className="practice-history-drawer-panel motion-enter-fast">
               <PracticeHistoryRail
                 currentSessionId={session.currentSessionId}
                 currentSolves={session.solves}

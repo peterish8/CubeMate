@@ -21,11 +21,11 @@ export function ToggleSetting({
             onChange(!value);
           }
         }}
-        className={`relative rounded-full transition-colors cursor-pointer ${value ? "bg-blue-600" : "bg-white/15"}`}
+        className={`motion-press relative rounded-full transition-colors cursor-pointer ${value ? "bg-blue-600" : "bg-white/15"}`}
         style={{ width: "34px", height: "18px" }}
       >
         <div
-          className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow transition-transform ${value ? "translate-x-[17px]" : "translate-x-0.5"}`}
+          className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow transition-transform duration-200 ease-[var(--cm-ease-spring)] ${value ? "translate-x-[17px]" : "translate-x-0.5"}`}
         />
       </div>
     </label>

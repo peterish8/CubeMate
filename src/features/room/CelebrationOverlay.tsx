@@ -24,7 +24,12 @@ export function CelebrationOverlay({
   const isWinner = winner === "me";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="match-result-title"
+    >
       <Confetti active={isWinner} />
 
       <div
@@ -50,6 +55,7 @@ export function CelebrationOverlay({
           <div className="space-y-2">
             <div className="text-5xl mb-1">{isWinner ? "🏆" : "💪"}</div>
             <h2
+              id="match-result-title"
               className={`text-2xl font-black tracking-tight ${
                 isWinner ? "text-green-400" : "text-red-400"
               }`}
@@ -71,8 +77,8 @@ export function CelebrationOverlay({
             <div className="space-y-1.5">
               <p className="text-white/25 text-[10px] uppercase tracking-widest font-bold">Round by round</p>
               <div className="space-y-1">
-                {roundResults.map((r) => (
-                  <RoundRow key={r.round} result={r} />
+                {roundResults.map((r, index) => (
+                  <RoundRow key={r.round} result={r} index={index} />
                 ))}
               </div>
             </div>
@@ -98,28 +104,20 @@ export function CelebrationOverlay({
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes celebIn {
-          from { opacity: 0; transform: scale(0.85) translateY(20px); }
-          to   { opacity: 1; transform: scale(1)    translateY(0); }
-        }
-        @keyframes confettiFall {
-          0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
-          100% { transform: translateY(105vh) rotate(540deg); opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }
 
-function RoundRow({ result }: { result: RoundResult }) {
+function RoundRow({ result, index }: { result: RoundResult; index: number }) {
   const { round, myTime, oppTime, winner } = result;
   const iWon = winner === "me";
   const oppWon = winner === "opponent";
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.05]">
+    <div
+      className="motion-enter-fast flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.05]"
+      style={{ animationDelay: `${100 + index * 55}ms` }}
+    >
       <span className="text-white/25 text-[10px] font-mono w-12 text-left">R{round}</span>
       <span className={`font-mono text-sm font-bold flex-1 text-left tabular-nums ${iWon ? "text-green-400" : "text-white/50"}`}>
         {myTime === null ? "DNF" : formatTime(myTime)}
@@ -156,7 +154,7 @@ const COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444", "#ec4899"
 function Confetti({ active }: { active: boolean }) {
   const pieces = useMemo(
     () =>
-      Array.from({ length: active ? 70 : 0 }, (_, i) => ({
+      Array.from({ length: active ? 36 : 0 }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
         delay: Math.random() * 2.5,
@@ -171,7 +169,7 @@ function Confetti({ active }: { active: boolean }) {
   if (!active) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-40">
+    <div className="motion-confetti fixed inset-0 pointer-events-none overflow-hidden z-40" aria-hidden="true">
       {pieces.map((p) => (
         <div
           key={p.id}

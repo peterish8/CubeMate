@@ -3,6 +3,10 @@ node_modules/
 
 # Build output
 dist/
+dist-server/
+
+# Terminal scratch logs
+terminals/
 
 # Logs
 *.log
@@ -27,3 +31,5 @@ Thumbs.db
 
 # Claude internal
 CLAUDE.md
+
+.vercel

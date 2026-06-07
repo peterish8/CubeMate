@@ -68,7 +68,7 @@ export function MatchPanel({
               key={i}
               className={`h-2 flex-1 rounded-full transition-all duration-300 ${
                 i < myWins ? "bg-blue-500 shadow-sm shadow-blue-500/50" : "bg-white/[0.08]"
-              }`}
+              } ${i === myWins - 1 ? "motion-score-segment" : ""}`}
             />
           ))}
         </div>
@@ -79,7 +79,11 @@ export function MatchPanel({
               {matchWinner === "me" ? "You win!" : "They win"}
             </span>
           ) : opponentConnected ? (
-            <span className="text-white/30 font-mono text-sm font-bold tabular-nums">
+            <span
+              key={`${myWins}-${oppWins}`}
+              className="motion-score text-white/30 font-mono text-sm font-bold tabular-nums"
+              aria-live="polite"
+            >
               {myWins}–{oppWins}
             </span>
           ) : (
@@ -93,7 +97,7 @@ export function MatchPanel({
               key={i}
               className={`h-2 flex-1 rounded-full transition-all duration-300 ${
                 i < oppWins ? "bg-red-500 shadow-sm shadow-red-500/50" : "bg-white/[0.08]"
-              }`}
+              } ${i === oppWins - 1 ? "motion-score-segment" : ""}`}
             />
           ))}
         </div>
@@ -112,8 +116,13 @@ export function MatchPanel({
 
       {roundResults.length > 0 && (
         <div className="space-y-0.5">
-          {roundResults.map((r) => (
-            <div key={r.round} className="flex items-center gap-2 text-[10px] font-mono px-0.5">
+          {roundResults.map((r, index) => (
+            <div
+              key={r.round}
+              className={`flex items-center gap-2 text-[10px] font-mono px-0.5 ${
+                index === roundResults.length - 1 ? "motion-list-item" : ""
+              }`}
+            >
               <span className="text-white/20 w-6">R{r.round}</span>
               <span className={`flex-1 tabular-nums ${r.winner === "me" ? "text-blue-400" : "text-white/40"}`}>
                 {r.myTime === null ? "DNF" : formatTime(r.myTime)}

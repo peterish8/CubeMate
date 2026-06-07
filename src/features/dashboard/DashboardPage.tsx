@@ -116,21 +116,25 @@ function DashboardAuthed() {
 
           <div className="dashboard-grid mt-8">
             <SummaryTile
+              index={0}
               label="Total solves"
               value={String(totalSolves)}
               note={hasData ? "All synced attempts across your tracked sessions." : "No synced solves yet."}
             />
             <SummaryTile
+              index={1}
               label="Active events"
               value={String(activeEvents)}
               note={hasData ? `${coverage}% of WCA events covered.` : "Start with one event and build outward."}
             />
             <SummaryTile
+              index={2}
               label="Fastest event"
               value={fastestEvent ? eventMeta.get(fastestEvent.event) ?? fastestEvent.event : "None yet"}
               note={fastestEvent?.bestMs != null ? `Best single ${formatTime(fastestEvent.bestMs)}.` : "A best single will appear after your first tracked solve."}
             />
             <SummaryTile
+              index={3}
               label="Most practiced"
               value={mostPracticed ? eventMeta.get(mostPracticed.event) ?? mostPracticed.event : "None yet"}
               note={mostPracticed ? `${mostPracticed.solveCount} solve${mostPracticed.solveCount === 1 ? "" : "s"} logged.` : "Your highest-volume event will show here."}
@@ -171,7 +175,7 @@ function DashboardAuthed() {
       <section className="section-wrap pt-4 pb-16 sm:pb-20">
         {hasData ? (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {WCA_EVENTS.map(({ id, label }) => {
+            {WCA_EVENTS.map(({ id, label }, index) => {
               const row = rows.find((item) => item.event === id);
               const count = row?.solveCount ?? 0;
               const best = row?.bestMs;
@@ -185,7 +189,11 @@ function DashboardAuthed() {
                       : "Tracked";
 
               return (
-                <div key={id} className="stat-tile">
+                <div
+                  key={id}
+                  className="stat-tile motion-dashboard-card motion-hover-card"
+                  style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="section-label">{id}</p>
@@ -211,10 +219,11 @@ function DashboardAuthed() {
 
                   <div className="mt-6 h-2 rounded-full bg-white/[0.05] overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#1a84ff] to-[#71f0b6]"
+                      className="motion-progress h-full rounded-full bg-gradient-to-r from-[#1a84ff] to-[#71f0b6]"
                       style={{
                         width: `${Math.max(10, mostPracticed ? Math.round((count / Math.max(mostPracticed.solveCount, 1)) * 100) : 10)}%`,
                         opacity: count === 0 ? 0.22 : 1,
+                        animationDelay: `${160 + Math.min(index * 45, 360)}ms`,
                       }}
                     />
                   </div>
@@ -248,16 +257,21 @@ function DashboardAuthed() {
 }
 
 function SummaryTile({
+  index,
   label,
   value,
   note,
 }: {
+  index: number;
   label: string;
   value: string;
   note: string;
 }) {
   return (
-    <div className="stat-tile">
+    <div
+      className="stat-tile motion-dashboard-card motion-hover-card"
+      style={{ animationDelay: `${index * 70}ms` }}
+    >
       <p className="section-label">{label}</p>
       <p className="metric-number mt-5 text-3xl sm:text-4xl text-white">{value}</p>
       <p className="mt-4 text-sm text-white/58 leading-6">{note}</p>
@@ -275,7 +289,7 @@ function InsightCard({
   footer: string;
 }) {
   return (
-    <div className="card p-6 sm:p-7">
+    <div className="card motion-enter motion-hover-card p-6 sm:p-7">
       <h2 className="text-xl font-semibold tracking-tight text-white">{title}</h2>
       <p className="mt-4 text-white/65 leading-7">{body}</p>
       <p className="mt-5 text-sm text-white/46">{footer}</p>

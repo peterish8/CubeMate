@@ -4,9 +4,5 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "env": {
-    "VITE_CONVEX_URL": "@vite_convex_url",
-    "VITE_SIGNALING_URL": "@vite_signaling_url"
-  }
+  ]
 }

@@ -72,9 +72,11 @@ export function RoomHeader({
           <button
             type="button"
             onClick={onCopyLink}
-            className="text-white/30 hover:text-white/70 transition-colors ml-0.5"
+            className="motion-press text-white/30 hover:text-white/70 transition-colors ml-0.5"
+            aria-label={copied ? "Room link copied" : "Copy room link"}
+            aria-live="polite"
           >
-            {copied ? <CheckIcon className="w-3 h-3 text-green-400" /> : <CopyIcon className="w-3 h-3" />}
+            {copied ? <CheckIcon className="motion-pop w-3 h-3 text-green-400" /> : <CopyIcon className="w-3 h-3" />}
           </button>
         </div>
 
@@ -86,7 +88,7 @@ export function RoomHeader({
           type="button"
           onClick={onToggleSync}
           title={syncEnabled ? "Sync ON: scramble/event broadcast to opponent" : "Sync OFF: independent puzzles"}
-          className={`hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-medium transition-all ${
+          className={`motion-press hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-medium transition-all ${
             syncEnabled
               ? "bg-blue-600/15 border-blue-500/25 text-blue-300"
               : "bg-white/[0.05] border-white/[0.09] text-white/30"
@@ -102,7 +104,9 @@ export function RoomHeader({
           title={cameraOn ? "Camera off" : "Camera on"}
           className={`btn text-xs py-1 px-2 rounded-lg ${cameraOn ? "btn-secondary" : "bg-red-500/15 border border-red-500/20 text-red-400 hover:bg-red-500/25"}`}
         >
-          {cameraOn ? <CameraIcon className="w-3.5 h-3.5" /> : <CameraOffIcon className="w-3.5 h-3.5" />}
+          <span key={cameraOn ? "on" : "off"} className="motion-pop">
+            {cameraOn ? <CameraIcon className="w-3.5 h-3.5" /> : <CameraOffIcon className="w-3.5 h-3.5" />}
+          </span>
         </button>
 
         <button
@@ -111,7 +115,9 @@ export function RoomHeader({
           title={micOn ? "Mute" : "Unmute"}
           className={`btn text-xs py-1 px-2 rounded-lg ${micOn ? "btn-secondary" : "bg-red-500/15 border border-red-500/20 text-red-400 hover:bg-red-500/25"}`}
         >
-          {micOn ? <MicIcon className="w-3.5 h-3.5" /> : <MicOffIcon className="w-3.5 h-3.5" />}
+          <span key={micOn ? "on" : "off"} className="motion-pop">
+            {micOn ? <MicIcon className="w-3.5 h-3.5" /> : <MicOffIcon className="w-3.5 h-3.5" />}
+          </span>
         </button>
 
         <button
