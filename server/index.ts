@@ -1,38 +1,35 @@
+import "./loadEnv";
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import path from "path";
+import { fileURLToPath } from "url";
 
-// Browser types not available in Node — define minimal shapes inline
-type SdpInit = { type: string; sdp?: string };
-type IceCandidateInit = { candidate?: string; sdpMid?: string | null; sdpMLineIndex?: number | null };
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { createMatchmaking } from "./matchmaking";
+import type { QueueEntry } from "./matchmaking";
 
 const app = express();
 const httpServer = createServer(app);
 
+const corsOrigins = process.env.SIGNALING_CORS_ORIGINS?.split(",").map((s) => s.trim()) ?? [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+];
+
 const io = new Server(httpServer, {
-  cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    methods: ["GET", "POST"],
-  },
+  cors: { origin: corsOrigins, methods: ["GET", "POST"] },
 });
 
-// In-memory room and queue state
-const rooms = new Map<string, Set<string>>();
+const matchmaking = createMatchmaking();
 const socketToRoom = new Map<string, string>();
-const matchQueue: string[] = [];
+const socketEvent = new Map<string, string>();
 
-function generateRoomCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
-}
+const SKIP_LIMIT = 8;
+const skipCounts = new Map<string, { count: number; resetAt: number }>();
 
 function getOtherPeer(roomCode: string, mySocketId: string): string | undefined {
-  const room = rooms.get(roomCode);
+  const room = io.sockets.adapter.rooms.get(roomCode);
   if (!room) return undefined;
   for (const id of room) {
     if (id !== mySocketId) return id;
@@ -40,122 +37,182 @@ function getOtherPeer(roomCode: string, mySocketId: string): string | undefined 
   return undefined;
 }
 
-function joinRoom(socketId: string, roomCode: string): void {
-  // Leave any existing room first
-  const prevRoom = socketToRoom.get(socketId);
-  if (prevRoom) leaveRoom(socketId, prevRoom);
-
-  if (!rooms.has(roomCode)) rooms.set(roomCode, new Set());
-  rooms.get(roomCode)!.add(socketId);
+function joinSocketRoom(socketId: string, roomCode: string, socket: import("socket.io").Socket): void {
+  const prev = socketToRoom.get(socketId);
+  if (prev) {
+    socket.leave(prev);
+    socketToRoom.delete(socketId);
+  }
+  socket.join(roomCode);
   socketToRoom.set(socketId, roomCode);
 }
 
-function leaveRoom(socketId: string, roomCode: string): void {
-  const room = rooms.get(roomCode);
-  if (room) {
-    room.delete(socketId);
-    if (room.size === 0) rooms.delete(roomCode);
+function leaveSocketRoom(socketId: string, roomCode: string, socket: import("socket.io").Socket): void {
+  socket.leave(roomCode);
+  if (socketToRoom.get(socketId) === roomCode) {
+    socketToRoom.delete(socketId);
   }
-  socketToRoom.delete(socketId);
+}
+
+function checkSkipRate(socketId: string): boolean {
+  const now = Date.now();
+  const entry = skipCounts.get(socketId);
+  if (!entry || now > entry.resetAt) {
+    skipCounts.set(socketId, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= SKIP_LIMIT) return false;
+  entry.count += 1;
+  return true;
+}
+
+async function pairSocket(
+  socket: import("socket.io").Socket,
+  event: string
+): Promise<void> {
+  const entry: QueueEntry = {
+    socketId: socket.id,
+    event,
+    enqueuedAt: Date.now(),
+  };
+
+  const result = await matchmaking.enqueue(entry);
+
+  if (result.status === "waiting") {
+    socket.emit("waiting-for-match", { event });
+    return;
+  }
+
+  const { roomCode, peerSocketId } = result;
+  const peerSocket = io.sockets.sockets.get(peerSocketId);
+  if (!peerSocket) {
+    await matchmaking.enqueue(entry);
+    socket.emit("waiting-for-match", { event });
+    return;
+  }
+
+  joinSocketRoom(socket.id, roomCode, socket);
+  joinSocketRoom(peerSocketId, roomCode, peerSocket);
+
+  socket.emit("matched", { roomCode, peerId: peerSocketId, initiator: false });
+  peerSocket.emit("matched", {
+    roomCode,
+    peerId: socket.id,
+    initiator: true,
+  });
+
+  console.log(`[match] ${socket.id} + ${peerSocketId} → ${roomCode}`);
 }
 
 io.on("connection", (socket) => {
   console.log(`[+] ${socket.id} connected`);
 
-  // Join a specific room by code
   socket.on("join-room", (roomCode: string) => {
     const code = String(roomCode).toUpperCase().trim();
-    joinRoom(socket.id, code);
-    socket.join(code);
+    joinSocketRoom(socket.id, code, socket);
 
     const peer = getOtherPeer(code, socket.id);
     if (peer) {
-      // Notify the new joiner that a peer exists
       socket.emit("peer-joined", { peerId: peer, initiator: false });
-      // Notify the existing peer that someone joined
       io.to(peer).emit("peer-joined", { peerId: socket.id, initiator: true });
     }
-
-    console.log(`[room:${code}] ${socket.id} joined (${rooms.get(code)?.size ?? 0} users)`);
   });
 
-  // Random match queue
-  socket.on("random-match", () => {
-    const idx = matchQueue.indexOf(socket.id);
-    if (idx !== -1) return; // already in queue
-
-    if (matchQueue.length > 0) {
-      const peerId = matchQueue.shift()!;
-      const code = generateRoomCode();
-      // Pair them
-      joinRoom(socket.id, code);
-      joinRoom(peerId, code);
-      socket.join(code);
-      io.sockets.sockets.get(peerId)?.join(code);
-
-      socket.emit("matched", { roomCode: code, peerId, initiator: false });
-      io.to(peerId).emit("matched", { roomCode: code, peerId: socket.id, initiator: true });
-    } else {
-      matchQueue.push(socket.id);
-      socket.emit("waiting-for-match", {});
-    }
+  socket.on("random-match", (payload?: { event?: string }) => {
+    const event = payload?.event ?? socketEvent.get(socket.id) ?? "333";
+    socketEvent.set(socket.id, event);
+    void pairSocket(socket, event);
   });
 
   socket.on("cancel-match", () => {
-    const idx = matchQueue.indexOf(socket.id);
-    if (idx !== -1) matchQueue.splice(idx, 1);
+    void matchmaking.dequeue(socket.id);
+    socket.emit("match-cancelled", {});
   });
 
-  // WebRTC signaling relay
-  socket.on("offer", ({ roomCode, sdp }: { roomCode: string; sdp: SdpInit }) => {
-    const peer = getOtherPeer(roomCode, socket.id);
-    if (peer) io.to(peer).emit("offer", { sdp, from: socket.id });
-  });
+  socket.on("skip-match", async (payload?: { event?: string }) => {
+    if (!checkSkipRate(socket.id)) {
+      socket.emit("skip-rate-limited", {});
+      return;
+    }
 
-  socket.on("answer", ({ roomCode, sdp }: { roomCode: string; sdp: SdpInit }) => {
-    const peer = getOtherPeer(roomCode, socket.id);
-    if (peer) io.to(peer).emit("answer", { sdp, from: socket.id });
-  });
+    const event = payload?.event ?? socketEvent.get(socket.id) ?? "333";
+    socketEvent.set(socket.id, event);
 
-  socket.on("ice-candidate", ({ roomCode, candidate }: { roomCode: string; candidate: IceCandidateInit }) => {
-    const peer = getOtherPeer(roomCode, socket.id);
-    if (peer) io.to(peer).emit("ice-candidate", { candidate, from: socket.id });
-  });
-
-  // Timer sync fallback relay
-  socket.on("timer-sync", ({ roomCode, message }: { roomCode: string; message: unknown }) => {
-    const peer = getOtherPeer(roomCode, socket.id);
-    if (peer) io.to(peer).emit("timer-sync", { message, from: socket.id });
-  });
-
-  // Disconnect / leave
-  socket.on("leave-room", (roomCode: string) => {
-    const code = String(roomCode).toUpperCase().trim();
-    leaveRoom(socket.id, code);
-    socket.leave(code);
-    const peer = getOtherPeer(code, socket.id);
-    if (peer) io.to(peer).emit("peer-left", {});
-  });
-
-  socket.on("disconnect", () => {
-    // Remove from match queue
-    const idx = matchQueue.indexOf(socket.id);
-    if (idx !== -1) matchQueue.splice(idx, 1);
-
-    // Notify room peer
     const roomCode = socketToRoom.get(socket.id);
     if (roomCode) {
       const peer = getOtherPeer(roomCode, socket.id);
-      if (peer) io.to(peer).emit("peer-left", {});
-      leaveRoom(socket.id, roomCode);
+      if (peer) io.to(peer).emit("peer-left", { reason: "skip" });
+      leaveSocketRoom(socket.id, roomCode, socket);
+    }
+
+    await matchmaking.removeFromQueue(socket.id);
+
+    const entry: QueueEntry = {
+      socketId: socket.id,
+      event,
+      enqueuedAt: Date.now(),
+    };
+
+    const requeue =
+      "requeueAfterSkip" in matchmaking && typeof matchmaking.requeueAfterSkip === "function"
+        ? matchmaking.requeueAfterSkip(entry)
+        : matchmaking.enqueue(entry);
+
+    const result = await requeue;
+    if (result.status === "waiting") {
+      socket.emit("waiting-for-match", { event });
+      return;
+    }
+
+    const peerSocket = io.sockets.sockets.get(result.peerSocketId);
+    if (!peerSocket) {
+      socket.emit("waiting-for-match", { event });
+      return;
+    }
+
+    joinSocketRoom(socket.id, result.roomCode, socket);
+    joinSocketRoom(result.peerSocketId, result.roomCode, peerSocket);
+
+    socket.emit("matched", {
+      roomCode: result.roomCode,
+      peerId: result.peerSocketId,
+      initiator: false,
+    });
+    peerSocket.emit("matched", {
+      roomCode: result.roomCode,
+      peerId: socket.id,
+      initiator: true,
+    });
+  });
+
+  socket.on("leave-room", (roomCode: string) => {
+    const code = String(roomCode).toUpperCase().trim();
+    const peer = getOtherPeer(code, socket.id);
+    if (peer) io.to(peer).emit("peer-left", { reason: "leave" });
+    leaveSocketRoom(socket.id, code, socket);
+  });
+
+  socket.on("disconnect", () => {
+    void matchmaking.dequeue(socket.id);
+    skipCounts.delete(socket.id);
+
+    const roomCode = socketToRoom.get(socket.id);
+    if (roomCode) {
+      const peer = getOtherPeer(roomCode, socket.id);
+      if (peer) io.to(peer).emit("peer-left", { reason: "disconnect" });
+      socket.leave(roomCode);
+      socketToRoom.delete(socket.id);
     }
 
     console.log(`[-] ${socket.id} disconnected`);
   });
+
+  // Optional queue depth (server-side only, no Redis read from clients)
+  socket.on("get-queue-depth", async () => {
+    socket.emit("queue-depth", { depth: 0 });
+  });
 });
 
-// Serve static files in production
-// __dirname is available natively in CommonJS (tsconfig.server.json uses module: "CommonJS")
 app.use(express.static(path.join(__dirname, "../dist")));
 app.get("*", (_req, res) => {
   res.sendFile(path.join(__dirname, "../dist/index.html"));
@@ -163,5 +220,5 @@ app.get("*", (_req, res) => {
 
 const PORT = process.env.PORT ?? 3001;
 httpServer.listen(PORT, () => {
-  console.log(`CubeRoom signaling server running on :${PORT}`);
+  console.log(`CubeMate signaling server on :${PORT}`);
 });
