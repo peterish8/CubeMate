@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-server
+src
+public
+convex
+.env
+.env.local
+.env.*.local
+*.md
+.git
+.github
+.vscode
+.idea

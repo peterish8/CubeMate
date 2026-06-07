@@ -3,6 +3,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -213,10 +214,17 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(express.static(path.join(__dirname, "../dist")));
-app.get("*", (_req, res) => {
-  res.sendFile(path.join(__dirname, "../dist/index.html"));
+app.get("/health", (_req, res) => {
+  res.json({ ok: true, uptime: process.uptime() });
 });
+
+const distPath = path.join(__dirname, "../dist");
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 const PORT = process.env.PORT ?? 3001;
 httpServer.listen(PORT, () => {
