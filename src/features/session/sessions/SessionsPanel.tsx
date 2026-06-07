@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { CubeSession, Penalty, SessionId, Solve, SolveId } from "../../../domain/types";
 import { exportCSV, exportJSON } from "../../../domain/export/exportSolves";
 import { CubeOutlineIcon } from "./sessionIcons";
@@ -27,6 +28,14 @@ export function SessionsPanel({
 }: SessionsPanelProps) {
   const selection = useSessionSelection(allSolves, currentSessionId);
   const reversed = [...sessions].reverse();
+  const [exportFlash, setExportFlash] = useState<"csv" | "json" | null>(null);
+
+  const handleExport = (type: "csv" | "json") => {
+    if (type === "csv") exportCSV(allSolves);
+    else exportJSON(allSolves);
+    setExportFlash(type);
+    window.setTimeout(() => setExportFlash(null), 1800);
+  };
 
   const handleDeleteSelected = () => {
     onDeleteSessions([...selection.selected]);
@@ -60,18 +69,26 @@ export function SessionsPanel({
           <button
             type="button"
             disabled={allSolves.length === 0}
-            onClick={() => exportCSV(allSolves)}
-            className="text-white/25 hover:text-white/60 text-[10px] transition-colors disabled:opacity-20 px-1.5 py-1 rounded-lg hover:bg-white/[0.05]"
+            onClick={() => handleExport("csv")}
+            className={`text-[10px] transition-all px-1.5 py-1 rounded-lg disabled:opacity-20 ${
+              exportFlash === "csv"
+                ? "text-green-400 bg-green-500/10"
+                : "text-white/25 hover:text-white/60 hover:bg-white/[0.05]"
+            }`}
           >
-            CSV
+            {exportFlash === "csv" ? "CSV ✓" : "CSV"}
           </button>
           <button
             type="button"
             disabled={allSolves.length === 0}
-            onClick={() => exportJSON(allSolves)}
-            className="text-white/25 hover:text-white/60 text-[10px] transition-colors disabled:opacity-20 px-1.5 py-1 rounded-lg hover:bg-white/[0.05]"
+            onClick={() => handleExport("json")}
+            className={`text-[10px] transition-all px-1.5 py-1 rounded-lg disabled:opacity-20 ${
+              exportFlash === "json"
+                ? "text-green-400 bg-green-500/10"
+                : "text-white/25 hover:text-white/60 hover:bg-white/[0.05]"
+            }`}
           >
-            JSON
+            {exportFlash === "json" ? "JSON ✓" : "JSON"}
           </button>
           <div className="w-px h-3 bg-white/[0.08]" />
           <button

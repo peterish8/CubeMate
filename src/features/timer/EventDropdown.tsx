@@ -41,6 +41,7 @@ export function EventDropdown({ value, onChange }: EventDropdownProps) {
     <div ref={ref} className="relative">
       {/* Trigger */}
       <button
+        type="button"
         onClick={() => setOpen((o) => !o)}
         className={`
           flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-semibold
@@ -84,13 +85,15 @@ export function EventDropdown({ value, onChange }: EventDropdownProps) {
                   return (
                     <button
                       key={id}
+                      type="button"
                       onClick={() => { onChange(id as CubeEvent); setOpen(false); }}
                       className={`
                         px-1.5 py-1.5 rounded-lg text-[10px] font-semibold text-center
                         transition-all duration-150 leading-tight
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60
                         ${selected
                           ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                          : "text-white/55 hover:bg-white/[0.08] hover:text-white/90"
+                          : "text-white/55 hover:bg-white/[0.08] hover:text-white/90 focus-visible:bg-white/[0.08] focus-visible:text-white/90"
                         }
                       `}
                     >
