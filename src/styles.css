@@ -301,7 +301,7 @@
 
   .landing-band {
     position: relative;
-    padding-block: 72px;
+    padding-block: 40px;
   }
 
   .landing-band::before {
@@ -324,8 +324,7 @@
   }
 
   .sticky-rail {
-    position: sticky;
-    top: 96px;
+    position: relative;
   }
 
   .artifact-panel {
@@ -1335,6 +1334,43 @@
     .entry-lane-aside {
       align-items: flex-end;
       text-align: right;
+    }
+
+    .landing-band {
+      padding-block: 72px;
+    }
+
+    .sticky-rail {
+      position: sticky;
+      top: 96px;
+    }
+
+    .practice-header {
+      padding: 16px 24px;
+    }
+
+    .practice-layout {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .practice-main-column {
+      padding: 13px 16px 15px;
+    }
+
+    .practice-history-column {
+      display: block;
+      width: min(300px, 36vw);
+      transition: width 220ms ease, opacity 220ms ease;
+      overflow: hidden;
+    }
+
+    .practice-history-column-collapsed {
+      width: 0;
+      opacity: 0;
+    }
+
+    .practice-history-drawer {
+      display: none;
     }
   }
 
