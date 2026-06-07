@@ -123,7 +123,7 @@ export function LandingPage() {
           <div className="hero-stage-beams" />
 
           <div className="section-wrap">
-            <header className="relative z-[2] flex items-center justify-between gap-4 py-6 text-sm">
+            <header className="relative z-[2] flex items-center justify-between gap-4 py-4 sm:py-6 text-sm">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05]">
                   <CubeGlyph className="h-5 w-5 text-[#8cd8ff]" />
@@ -149,7 +149,7 @@ export function LandingPage() {
               </div>
             </header>
 
-            <div className="relative z-[1] grid gap-8 py-10 sm:py-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:py-20">
+            <div className="relative z-[1] grid gap-8 py-6 sm:py-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:py-20">
               <div className="relative z-[2] flex flex-col justify-center gap-7">
                 <div className="space-y-5">
                   <div className="accent-chip w-fit">
@@ -229,7 +229,7 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="hero-cube-stage">
+              <div className="hero-cube-stage hidden lg:flex">
                 <div className="hero-cube-atmosphere" />
                 <div className="hero-cube-shadow" />
                 <div className="hero-cube-reflection" />
@@ -294,7 +294,7 @@ export function LandingPage() {
 
       <section className="landing-band landing-band-quiet cinema-section">
         <div className="section-wrap grid gap-8 lg:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
-          <div className="sticky-rail">
+          <div className="sticky-rail mb-4 lg:mb-0">
             <div className="artifact-panel stage-panel p-4 sm:p-5 lg:p-6">
               <div className="flex flex-col gap-6">
                 <div className="flex items-start justify-between gap-4">
@@ -470,7 +470,7 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="finale-cube-stage">
+              <div className="finale-cube-stage hidden lg:flex">
                 <div className="finale-cube-light" />
                 <div className="finale-cube-shadow" />
                 <CinematicCube grand />
@@ -615,7 +615,7 @@ function ProtocolArtifact({
           <h3 className="text-2xl font-semibold tracking-tight text-white">{title}</h3>
           <p className="text-sm leading-7 text-white/62 sm:text-base">{body}</p>
         </div>
-        <div className="rounded-[24px] border border-white/10 bg-[rgba(4,8,14,0.76)] p-4">
+        <div className="hidden lg:block rounded-[24px] border border-white/10 bg-[rgba(4,8,14,0.76)] p-4">
           {type === "rooms" ? <RoomStackArtifact /> : type === "feed" ? <LiveFeedArtifact /> : <StatsArtifact />}
         </div>
       </div>
@@ -657,7 +657,7 @@ function EntryPathLane({
         </div>
 
         <div className="entry-lane-aside">
-          <p className="font-[Sora] text-4xl font-bold tracking-[-0.08em] text-white/16">{accent}</p>
+          <p className="hidden sm:block font-[Sora] text-4xl font-bold tracking-[-0.08em] text-white/16">{accent}</p>
           <button onClick={onAction} className="btn-secondary px-5 text-sm">
             {actionLabel}
           </button>

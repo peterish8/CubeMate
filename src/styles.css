@@ -189,6 +189,7 @@
     min-height: 48px;
     padding: 12px 18px;
     border-radius: 999px;
+    touch-action: manipulation;
   }
 
   .btn-primary {
@@ -271,7 +272,13 @@
 
   .landing-band {
     position: relative;
-    padding-block: 72px;
+    padding-block: 32px;
+  }
+
+  @media (min-width: 768px) {
+    .landing-band {
+      padding-block: 72px;
+    }
   }
 
   .landing-band::before {
@@ -759,6 +766,8 @@
       radial-gradient(circle at 50% 12%, rgba(77, 182, 255, 0.08), transparent 22%);
     box-shadow: 0 32px 90px rgba(0, 0, 0, 0.34);
     backdrop-filter: blur(20px);
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .practice-timer-shell-system {
@@ -934,6 +943,7 @@
     justify-content: center;
     min-height: 0;
     padding: 10px 18px 0;
+    touch-action: none;
     transition: padding 320ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -942,7 +952,7 @@
   }
 
   .practice-timer-stage-touch {
-    touch-action: manipulation;
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
   }
@@ -1667,6 +1677,25 @@
     font-size: 11px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+  }
+
+  /* ── Mobile-only overrides (max 767px) ── */
+  @media (max-width: 767px) {
+    .sticky-rail {
+      position: static;
+    }
+
+    .hero-cube-stage {
+      min-height: 240px;
+    }
+
+    .finale-cube-stage {
+      min-height: 220px;
+    }
+
+    .cinema-section::after {
+      display: none;
+    }
   }
 }
 

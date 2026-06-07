@@ -36,7 +36,7 @@ export function PracticePage() {
   };
 
   return (
-    <div className={soloLevelingMode ? "practice-page-shell practice-page-shell-system" : "practice-page-shell"}>
+    <div className={`overscroll-none ${soloLevelingMode ? "practice-page-shell practice-page-shell-system" : "practice-page-shell"}`}>
       <div className="practice-page-grid" />
       {soloLevelingMode && <div className="practice-system-scanlines" aria-hidden="true" />}
       {systemFlashActive && <div className="practice-system-flash" aria-hidden="true" />}

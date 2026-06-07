@@ -102,7 +102,7 @@ export function RoomPage() {
   const winsNeeded = Math.ceil(matchLive.matchN / 2);
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-[#090b0f] overflow-hidden">
+    <div className="h-[100dvh] flex flex-col bg-[#090b0f] overflow-hidden overscroll-none">
       {matchLive.showCelebration && matchLive.matchWinner && (
         <CelebrationOverlay
           winner={matchLive.matchWinner}

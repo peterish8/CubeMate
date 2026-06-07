@@ -365,7 +365,7 @@ export function TimerPanel({
                 : touchMode
                   ? "practice-timer-stage practice-timer-stage-touch"
                   : "practice-timer-stage"
-              : "flex-1 flex flex-col items-center justify-center min-h-0 relative px-4"
+              : "flex-1 flex flex-col items-center justify-center min-h-0 relative px-4 touch-none"
           }
           onPointerDown={handleTouchStagePress}
           onPointerUp={handleTouchStageRelease}
@@ -382,7 +382,7 @@ export function TimerPanel({
           </div>
 
           <div
-            className={`relative timer-display ${cinematic ? "practice-timer-value" : "text-[clamp(5rem,16vw,18rem)]"} ${
+            className={`relative timer-display ${cinematic ? "practice-timer-value" : "text-[clamp(4rem,16vw,18rem)]"} ${
               soloLevelingMode ? "practice-timer-value-system" : ""
             } ${timerColorClass} ${glowClass} transition-colors duration-200`}
           >
@@ -529,7 +529,7 @@ function PenaltyButton({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className={`btn text-xs px-4 py-1.5 rounded-lg ${active ? activeClass : className}`}>
+    <button onClick={onClick} className={`btn touch-manipulation text-xs px-4 py-1.5 rounded-lg ${active ? activeClass : className}`}>
       {label}
     </button>
   );
