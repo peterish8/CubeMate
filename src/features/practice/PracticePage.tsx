@@ -65,10 +65,12 @@ export function PracticePage() {
             onClick={toggleSoloLevelingMode}
             className={soloLevelingMode ? "practice-mode-toggle practice-mode-toggle-active" : "practice-mode-toggle"}
           >
-            {soloLevelingMode ? "System mode on" : "Solo Leveling mode"}
+            <span className="hidden sm:inline">{soloLevelingMode ? "System mode on" : "Solo Leveling mode"}</span>
+            <span className="sm:hidden">{soloLevelingMode ? "System" : "Mode"}</span>
           </button>
           <button type="button" onClick={() => setHistoryOpen((v) => !v)} className="practice-history-toggle">
-            {historyOpen ? "Close rail" : "Open rail"}
+            <span className="hidden sm:inline">{historyOpen ? "Close rail" : "Open rail"}</span>
+            <span className="sm:hidden">{historyOpen ? "✕" : "Rail"}</span>
           </button>
         </div>
       </header>

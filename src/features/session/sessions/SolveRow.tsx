@@ -46,7 +46,7 @@ export function SolveRow({ solve, num, isBest, isNewest = false, eventLabel, onD
           {solve.penalty === "+2" && <span className="text-amber-400/50 text-[10px] ml-1">+2</span>}
         </span>
 
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
           <button
             type="button"
             onClick={() => onPenalty(solve.penalty === "+2" ? "OK" : "+2")}
@@ -74,7 +74,7 @@ export function SolveRow({ solve, num, isBest, isNewest = false, eventLabel, onD
         <button
           type="button"
           onClick={() => setShowScramble((v) => !v)}
-          className="text-white/15 hover:text-white/50 transition-colors flex-shrink-0 hidden sm:block"
+          className="text-white/15 hover:text-white/50 transition-colors flex-shrink-0"
           title="Show scramble"
         >
           <ScrambleIcon className="w-3 h-3" />
@@ -87,7 +87,7 @@ export function SolveRow({ solve, num, isBest, isNewest = false, eventLabel, onD
         <button
           type="button"
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 text-white/15 hover:text-red-400 transition-all flex-shrink-0"
+          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-white/15 hover:text-red-400 transition-all flex-shrink-0"
           title="Delete"
         >
           <TrashIcon className="w-3.5 h-3.5" />

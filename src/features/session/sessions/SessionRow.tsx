@@ -58,8 +58,16 @@ export function SessionRow({
         <div
           role="checkbox"
           aria-checked={isSelected}
+          tabIndex={0}
           onClick={onToggleSelect}
-          className={`w-4 h-4 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleSelect(e as unknown as React.MouseEvent);
+            }
+          }}
+          className={`w-4 h-4 rounded-md border flex-shrink-0 flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-400/60 focus:outline-none ${
             isSelected ? "bg-blue-600 border-blue-500" : "border-white/[0.15] hover:border-white/30"
           }`}
         >

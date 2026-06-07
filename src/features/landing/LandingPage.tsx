@@ -259,7 +259,7 @@ export function LandingPage() {
       </section>
 
       <section className="landing-band landing-band-soft cinema-section">
-        <div className="section-wrap grid gap-10 lg:grid-cols-[minmax(260px,0.72fr)_minmax(0,1.28fr)] lg:gap-14">
+        <div className="section-wrap grid gap-10 md:grid-cols-2 md:gap-12 lg:grid-cols-[minmax(260px,0.72fr)_minmax(0,1.28fr)] lg:gap-14">
           <div className="sticky-rail space-y-4 self-start">
             <p className="section-label">Entry paths</p>
             <h2 className="display-title max-w-[11ch] text-3xl text-white sm:text-4xl">
@@ -296,7 +296,7 @@ export function LandingPage() {
       </section>
 
       <section className="landing-band landing-band-quiet cinema-section">
-        <div className="section-wrap grid gap-8 lg:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
+        <div className="section-wrap grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
           <div className="sticky-rail">
             <div className="artifact-panel stage-panel p-4 sm:p-5 lg:p-6">
               <div className="flex flex-col gap-6">
@@ -358,7 +358,7 @@ export function LandingPage() {
       </section>
 
       <section className="landing-band landing-band-soft cinema-section">
-        <div className="section-wrap grid gap-6 lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)]">
+        <div className="section-wrap grid gap-6 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)]">
           <div className="sticky-rail space-y-4 p-1 sm:p-2 self-start">
             <p className="section-label">The protocol</p>
             <h2 className="display-title max-w-[10ch] text-3xl text-white sm:text-4xl">
@@ -383,7 +383,7 @@ export function LandingPage() {
 
       <section className="landing-band landing-band-quiet cinema-section">
         <div className="section-wrap">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+          <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
             <div className="space-y-4">
               <p className="section-label">What matters</p>
               <h2 className="display-title max-w-[12ch] text-3xl text-white sm:text-4xl">

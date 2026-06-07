@@ -102,7 +102,7 @@ export function RoomHeader({
           type="button"
           onClick={onToggleCamera}
           title={cameraOn ? "Camera off" : "Camera on"}
-          className={`btn text-xs py-1 px-2 rounded-lg ${cameraOn ? "btn-secondary" : "bg-red-500/15 border border-red-500/20 text-red-400 hover:bg-red-500/25"}`}
+          className={`btn text-xs py-1 px-2 rounded-lg ${cameraOn ? "btn-secondary" : "bg-white/[0.04] border border-white/[0.10] text-white/30 hover:bg-white/[0.07]"}`}
         >
           <span key={cameraOn ? "on" : "off"} className="motion-pop">
             {cameraOn ? <CameraIcon className="w-3.5 h-3.5" /> : <CameraOffIcon className="w-3.5 h-3.5" />}
@@ -113,7 +113,7 @@ export function RoomHeader({
           type="button"
           onClick={onToggleMic}
           title={micOn ? "Mute" : "Unmute"}
-          className={`btn text-xs py-1 px-2 rounded-lg ${micOn ? "btn-secondary" : "bg-red-500/15 border border-red-500/20 text-red-400 hover:bg-red-500/25"}`}
+          className={`btn text-xs py-1 px-2 rounded-lg ${micOn ? "btn-secondary" : "bg-white/[0.04] border border-white/[0.10] text-white/30 hover:bg-white/[0.07]"}`}
         >
           <span key={micOn ? "on" : "off"} className="motion-pop">
             {micOn ? <MicIcon className="w-3.5 h-3.5" /> : <MicOffIcon className="w-3.5 h-3.5" />}
