@@ -89,7 +89,7 @@ export function PracticeHistoryRail({
       </div>
 
       {tab === "current" ? (
-        <div className="practice-history-body">
+        <div key="current" className="practice-history-body motion-tab-panel">
           {filteredCurrentSolves.length === 0 ? (
             <div className="practice-history-empty">
               <p className="text-sm font-medium text-white/60">No solves for this event yet</p>
@@ -103,6 +103,7 @@ export function PracticeHistoryRail({
                   solve={solve}
                   num={filteredCurrentSolves.length - index}
                   isBest={solve.id === bestSolveId}
+                  isNewest={index < 3}
                   eventLabel={EVENT_LABEL[solve.event] ?? solve.event}
                   onDelete={() => setPendingDelete(solve)}
                   onPenalty={(penalty) => onUpdatePenalty(solve.id, penalty)}
@@ -112,7 +113,7 @@ export function PracticeHistoryRail({
           )}
         </div>
       ) : (
-        <div className="practice-history-body practice-history-body-all">
+        <div key="all" className="practice-history-body practice-history-body-all motion-tab-panel">
           <SessionsPanel
             sessions={sessions}
             allSolves={allSolves}
@@ -126,10 +127,10 @@ export function PracticeHistoryRail({
       )}
 
       {pendingDelete && (
-        <div className="practice-delete-modal-backdrop">
-          <div className="practice-delete-modal">
+        <div className="practice-delete-modal-backdrop motion-enter-fast">
+          <div className="practice-delete-modal motion-pop" role="dialog" aria-modal="true" aria-labelledby="delete-solve-title">
             <p className="section-label">Delete solve</p>
-            <p className="mt-2 text-sm text-white">
+            <p id="delete-solve-title" className="mt-2 text-sm text-white">
               Remove{" "}
               {pendingDelete.finalTimeMs === null ? "DNF" : formatTime(pendingDelete.finalTimeMs)}{" "}
               from this session?
