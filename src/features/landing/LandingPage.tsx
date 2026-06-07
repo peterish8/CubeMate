@@ -6,71 +6,23 @@ import { isConvexConfigured } from "../../persistence";
 
 const ROOM_CODE_REGEX = /^[A-Z0-9]{4,8}$/;
 
-const JOURNEY_STEPS = [
+const HOW_IT_WORKS = [
   {
-    marker: "Step 01",
-    title: "Enter the room",
-    body: "Queue for random or paste a private code. No account, no setup — just start.",
+    step: "01",
+    title: "Queue or create",
+    body: "Hit random queue and match in seconds, or generate a private room code and share it instantly. No account needed.",
   },
   {
-    marker: "Step 02",
+    step: "02",
     title: "Race in real time",
-    body: "Shared scramble. Opponent timer live on screen. Score updates the moment a solve lands.",
+    body: "Both players get the same WCA scramble. Opponent timer runs live. Score updates the moment a solve lands.",
   },
   {
-    marker: "Step 03",
-    title: "Requeue in one tap",
-    body: "Your session saves automatically. Hit next to race again or review your splits.",
+    step: "03",
+    title: "Requeue and repeat",
+    body: "Your session saves automatically. Hit next to race again, or review splits, averages, and history.",
   },
 ];
-
-const PATHS = [
-  {
-    label: "Random Match",
-    title: "One click, one opponent",
-    body: "Hit the queue and get matched in seconds. Shared scramble, live timer, round score always visible.",
-    accent: "Instant",
-    action: "Find a cuber",
-    kind: "queue" as const,
-  },
-  {
-    label: "Private Room",
-    title: "Race your crew",
-    body: "Generate a room code, share it, start. Best-of-N format with synced scrambles and P2P video.",
-    accent: "Private",
-    action: "Create room",
-    kind: "create" as const,
-  },
-  {
-    label: "Solo Practice",
-    title: "Train between matches",
-    body: "Full timer with inspection, WCA scrambles, session history, and averages you can export.",
-    accent: "Focused",
-    action: "Open practice",
-    kind: "practice" as const,
-  },
-];
-
-const SYSTEM_ARTIFACTS = [
-  {
-    title: "Shared race rooms",
-    body: "Every room gets a short code. Share it in one tap. Both players see the same scramble, score, and round state — no sync lag.",
-    type: "rooms" as const,
-  },
-  {
-    title: "Live opponent feed",
-    body: "Inspection start, solve finish, penalty applied — you see it the moment it happens. No polling, no delay.",
-    type: "feed" as const,
-  },
-  {
-    title: "Sessions and averages",
-    body: "Every solve is logged automatically. Ao5, Ao12, mean, best, σ — tracked across sessions and exportable as CSV or JSON.",
-    type: "stats" as const,
-  },
-];
-
-const HERO_STATS = ["Best-of-N races", "P2P video feeds", "Private room codes", "Solo practice"];
-const HERO_SIGNALS = ["No signup first", "Shared scramble", "Session export"];
 
 function generateRoomCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -88,7 +40,7 @@ export function LandingPage() {
       navigate(`/room/${roomCode}`, { state: { fromQueue: true } });
     },
     onSkipRateLimited: () => {
-      setMatchError("Too many skips - wait a minute and try again.");
+      setMatchError("Too many skips — wait a minute and try again.");
     },
   });
 
@@ -115,6 +67,7 @@ export function LandingPage() {
     <div className="page-shell">
       <div className="absolute inset-0 bg-grid opacity-60 pointer-events-none" />
 
+      {/* ── HERO (unchanged) ──────────────────────────────────── */}
       <section className="w-full pt-0 pb-8 sm:pb-12">
         <div className="editorial-hero editorial-hero-full">
           <div className="cinema-bar cinema-bar-top cinema-bar-reveal-top" />
@@ -161,9 +114,7 @@ export function LandingPage() {
                     <h1 className="display-title max-w-[10ch] text-5xl text-white sm:text-6xl lg:text-[5.35rem]">
                       Turn every solve into a <span className="text-gradient-blue">cinematic race.</span>
                     </h1>
-                    <p className="display-subtitle max-w-xl">
-                      Race live. Solve fast. Requeue instantly.
-                    </p>
+                    <p className="display-subtitle max-w-xl">Race live. Solve fast. Requeue instantly.</p>
                   </div>
                 </div>
 
@@ -186,10 +137,8 @@ export function LandingPage() {
                   className="motion-hero-item flex flex-wrap gap-3 border-t border-white/10 pt-4 sm:pt-5"
                   style={{ animationDelay: "260ms" }}
                 >
-                  {HERO_SIGNALS.map((signal) => (
-                    <span key={signal} className="signal-chip">
-                      {signal}
-                    </span>
+                  {["No signup first", "Shared scramble", "Session export"].map((signal) => (
+                    <span key={signal} className="signal-chip">{signal}</span>
                   ))}
                 </div>
 
@@ -202,10 +151,7 @@ export function LandingPage() {
                     <input
                       type="text"
                       value={joinCode}
-                      onChange={(e) => {
-                        setError("");
-                        setJoinCode(e.target.value.toUpperCase());
-                      }}
+                      onChange={(e) => { setError(""); setJoinCode(e.target.value.toUpperCase()); }}
                       onKeyDown={(e) => e.key === "Enter" && handleJoin()}
                       placeholder="ROOM CODE"
                       maxLength={8}
@@ -220,10 +166,7 @@ export function LandingPage() {
                   {pairing.isQueueActive && (
                     <button
                       type="button"
-                      onClick={() => {
-                        pairing.cancelMatch();
-                        setMatchError("");
-                      }}
+                      onClick={() => { pairing.cancelMatch(); setMatchError(""); }}
                       className="mt-3 text-sm text-white/55 transition-colors hover:text-white/80"
                     >
                       Cancel current matchmaking search
@@ -244,12 +187,9 @@ export function LandingPage() {
           <div className="relative z-[2] border-t border-white/10 bg-[rgba(6,10,16,0.62)] px-5 py-4 backdrop-blur-sm">
             <div className="section-wrap">
               <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-between">
-                {HERO_STATS.map((stat) => (
-                  <span
-                    key={stat}
-                    className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/46 sm:text-xs"
-                  >
-                    {stat}
+                {["Best-of-N races", "P2P video feeds", "Private room codes", "Solo practice"].map((s) => (
+                  <span key={s} className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/46 sm:text-xs">
+                    {s}
                   </span>
                 ))}
               </div>
@@ -258,161 +198,80 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="landing-band landing-band-soft cinema-section">
-        <div className="section-wrap grid gap-10 md:grid-cols-2 md:gap-12 lg:grid-cols-[minmax(260px,0.72fr)_minmax(0,1.28fr)] lg:gap-14">
-          <div className="sticky-rail space-y-4 self-start">
-            <p className="section-label">Get started</p>
-            <h2 className="display-title max-w-[11ch] text-3xl text-white sm:text-4xl">
-              Three ways to race.
-            </h2>
-            <p className="max-w-md leading-7 text-white/52">Random queue, private room, or solo session — start whichever fits the moment.</p>
-          </div>
-
-          <div className="space-y-4">
-            {PATHS.map((path, index) => (
-              <EntryPathLane
-                key={path.title}
-                index={index + 1}
-                label={path.label}
-                title={path.title}
-                body={path.body}
-                accent={path.accent}
-                actionLabel={path.action}
-                onAction={() => {
-                  if (path.kind === "queue") {
-                    handleFindCuber();
-                    return;
-                  }
-                  if (path.kind === "create") {
-                    handleCreate();
-                    return;
-                  }
-                  handlePractice();
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-band landing-band-quiet cinema-section">
-        <div className="section-wrap grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
-          <div className="sticky-rail">
-            <div className="artifact-panel stage-panel p-4 sm:p-5 lg:p-6">
-              <div className="flex flex-col gap-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="max-w-xl">
-                    <p className="section-label">Live race</p>
-                    <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-                      Best-of-5 · Round 3
-                    </h2>
-                    <p className="mt-3 text-sm leading-7 text-white/52 sm:text-base">Score, state, and time — nothing hidden from either side.</p>
-                  </div>
-                  <span className="w-fit rounded-full border border-[rgba(77,182,255,0.24)] bg-[rgba(77,182,255,0.12)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#cdeaff]">
-                    Round 3
-                  </span>
-                </div>
-
-                <div className="grid gap-3">
-                  <MatchLane name="You" badge="Ready" time="07.91" status="PB pace" accent="green" />
-                  <MatchLane
-                    name="Opponent"
-                    badge="Solving"
-                    time="08.34"
-                    status="Split second behind"
-                    accent="blue"
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <ScoreBlock label="Score" value="2-1" />
-                  <ScoreBlock label="Event" value="3x3" />
-                  <ScoreBlock label="Mode" value="P2P" />
-                </div>
+      {/* ── STATS STRIP ───────────────────────────────────────── */}
+      <div className="border-y border-white/[0.06] bg-[rgba(6,10,16,0.55)]">
+        <div className="section-wrap py-8 sm:py-10">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:divide-x sm:divide-white/[0.06]">
+            {[
+              { value: "17", label: "WCA events" },
+              { value: "P2P", label: "Direct connection" },
+              { value: "0", label: "Required accounts" },
+              { value: "Ao100", label: "Longest average tracked" },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center gap-1.5 text-center sm:px-6">
+                <p className="font-[Sora] text-2xl font-bold tracking-[-0.04em] text-white sm:text-3xl">
+                  {stat.value}
+                </p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
+                  {stat.label}
+                </p>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── BENTO GRID ────────────────────────────────────────── */}
+      <section className="landing-band">
+        <div className="section-wrap space-y-10 lg:space-y-14">
+          <div className="max-w-2xl space-y-4">
+            <p className="section-label">Features</p>
+            <h2 className="display-title text-3xl text-white sm:text-4xl lg:text-5xl">
+              Everything in the<br className="hidden sm:block" /> race loop.
+            </h2>
+            <p className="display-subtitle text-base sm:text-lg">
+              Built for live races, private rematches, and practice that compounds.
+            </p>
           </div>
 
-          <div className="space-y-6">
-            <div className="max-w-2xl space-y-3">
-              <p className="section-label">How a match flows</p>
-              <h2 className="display-title text-3xl text-white sm:text-4xl">
-                Queue. Solve. Requeue.
-              </h2>
-              <p className="text-white/52 leading-7">The whole loop in under a minute. No waiting rooms, no reload.</p>
+          <div className="grid auto-rows-auto grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+            <div className="bento-card lg:col-span-2">
+              <BentoRaceCard />
             </div>
-
-            <div className="grid gap-4 border-t border-white/10 pt-8">
-              {JOURNEY_STEPS.map((item, index) => (
-                <JourneySequenceCard
-                  key={item.title}
-                  index={index + 1}
-                  marker={item.marker}
-                  title={item.title}
-                  body={item.body}
-                />
-              ))}
+            <div className="bento-card bento-card-accent">
+              <BentoInstantCard />
+            </div>
+            <div className="bento-card">
+              <BentoP2PCard />
+            </div>
+            <div className="bento-card lg:col-span-2">
+              <BentoPracticeCard />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="landing-band landing-band-soft cinema-section">
-        <div className="section-wrap grid gap-6 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)]">
-          <div className="sticky-rail space-y-4 p-1 sm:p-2 self-start">
-            <p className="section-label">Under the hood</p>
-            <h2 className="display-title max-w-[10ch] text-3xl text-white sm:text-4xl">
-              Built for the race loop.
+      {/* ── HOW IT WORKS ──────────────────────────────────────── */}
+      <section className="landing-band landing-band-quiet">
+        <div className="section-wrap">
+          <div className="mb-10 space-y-3 lg:mb-14">
+            <p className="section-label">How it works</p>
+            <h2 className="display-title text-3xl text-white sm:text-4xl">
+              Queue. Race. Requeue.
             </h2>
-            <p className="max-w-md leading-7 text-white/52">Every feature exists to make races start faster, run smoother, and feel more competitive.</p>
+            <p className="display-subtitle text-base">The whole loop in under a minute. No reload, no waiting room.</p>
           </div>
 
-          <div className="space-y-5">
-            {SYSTEM_ARTIFACTS.map((card, index) => (
-              <ProtocolArtifact
-                key={card.title}
-                index={index + 1}
-                title={card.title}
-                body={card.body}
-                type={card.type}
-              />
+          <div className="relative grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-6">
+            <div className="absolute left-[calc(33.33%+14px)] right-[calc(33.33%+14px)] top-5 hidden h-px bg-gradient-to-r from-transparent via-white/[0.14] to-transparent md:block" />
+            {HOW_IT_WORKS.map((item) => (
+              <HowItWorksStep key={item.step} step={item.step} title={item.title} body={item.body} />
             ))}
           </div>
         </div>
       </section>
 
-      <section className="landing-band landing-band-quiet cinema-section">
-        <div className="section-wrap">
-          <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-            <div className="space-y-4">
-              <p className="section-label">What you actually get</p>
-              <h2 className="display-title max-w-[12ch] text-3xl text-white sm:text-4xl">
-                No account. No friction.
-              </h2>
-              <p className="max-w-md leading-7 text-white/52">Everything runs in the browser. Open a room, share the code, race — start to finish in under 30 seconds.</p>
-            </div>
-
-            <div className="space-y-4">
-              <FeatureArtifactCard
-                title="Instant room entry"
-                body="6-character code. Share it anywhere. Your opponent joins in one tap — no download, no account."
-                accent="< 30s"
-              />
-              <FeatureArtifactCard
-                title="Real-time opponent view"
-                body="See your opponent's timer, inspection state, and round score live — same as if they were sitting across from you."
-                accent="P2P"
-              />
-              <FeatureArtifactCard
-                title="Practice that compounds"
-                body="Every solo session is logged. Your Ao5, Ao12, and best carry over so race warm-ups actually mean something."
-                accent="Ao5"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
+      {/* ── FINALE CTA ────────────────────────────────────────── */}
       <section className="landing-finale-shell">
         <div className="landing-finale">
           <div className="landing-finale-glow" />
@@ -421,14 +280,14 @@ export function LandingPage() {
               <div className="space-y-6 py-10 sm:py-14">
                 <div className="accent-chip w-fit">
                   <span className="h-2 w-2 rounded-full bg-[var(--cm-success)] animate-pulse" />
-                  Final call
+                  Ready to race
                 </div>
                 <div className="space-y-4">
                   <h2 className="display-title max-w-[10ch] text-4xl text-white sm:text-5xl lg:text-6xl">
                     Your next race is one tap away.
                   </h2>
                   <p className="max-w-xl text-base leading-7 text-white/58 sm:text-lg">
-                    Random match, private room, or solo session — no signup, no download, just open the link and race.
+                    No account. No download. Open a room, share the code, and race — start to finish in under 30 seconds.
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
@@ -447,16 +306,13 @@ export function LandingPage() {
                   <div className="space-y-3">
                     <p className="section-label">Backup and sync</p>
                     {isConvexConfigured() ? (
-                      <div className="finale-auth-card">
-                        <AuthPanel />
-                      </div>
+                      <div className="finale-auth-card"><AuthPanel /></div>
                     ) : (
                       <p className="text-sm leading-7 text-white/52">
-                        Cloud sync is optional. Add Convex later when you want backup across devices and the dashboard.
+                        Cloud sync is optional. Add Convex later for backup across devices and the dashboard.
                       </p>
                     )}
                   </div>
-
                   <div className="space-y-3">
                     <p className="section-label">Navigate</p>
                     <div className="grid gap-2 text-sm text-white/56 sm:grid-cols-2">
@@ -473,7 +329,7 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="finale-cube-stage">
+              <div className="finale-cube-stage hidden lg:flex">
                 <div className="finale-cube-light" />
                 <div className="finale-cube-shadow" />
                 <CinematicCube grand />
@@ -492,6 +348,224 @@ export function LandingPage() {
   );
 }
 
+// ── BENTO CARDS ───────────────────────────────────────────────────────────────
+
+function BentoRaceCard() {
+  return (
+    <div className="flex h-full flex-col gap-6">
+      <div className="space-y-2">
+        <p className="section-label">Live race room</p>
+        <h3 className="text-2xl font-semibold tracking-tight text-white">Head-to-head in real time.</h3>
+        <p className="text-sm leading-relaxed text-white/55">
+          Shared scramble. Opponent timer live on screen. Score and round state visible to both players throughout.
+        </p>
+      </div>
+      <div className="flex-1 rounded-2xl border border-white/[0.08] bg-[rgba(4,8,14,0.72)] p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--cm-success)] animate-pulse" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--cm-success)]">Live</span>
+          </div>
+          <span className="font-mono text-[11px] text-white/30">Round 3 · Best of 5</span>
+        </div>
+        <BentoMatchRow name="You" time="8.24" badge="Ready" accent="green" />
+        <BentoMatchRow name="Opponent" time="9.11" badge="Solving" accent="blue" />
+        <div className="grid grid-cols-3 gap-2 pt-1">
+          <BentoScoreBlock label="Score" value="2–1" highlight />
+          <BentoScoreBlock label="Event" value="3×3" />
+          <BentoScoreBlock label="Mode" value="P2P" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BentoMatchRow({
+  name, time, badge, accent,
+}: {
+  name: string; time: string; badge: string; accent: "blue" | "green";
+}) {
+  const cls =
+    accent === "green"
+      ? "bg-[rgba(113,240,182,0.14)] border border-[rgba(113,240,182,0.28)] text-[#d9fff0]"
+      : "bg-[rgba(77,182,255,0.14)] border border-[rgba(77,182,255,0.28)] text-[#d8efff]";
+  return (
+    <div className="flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/[0.03] px-3 py-2.5">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-semibold text-white">{name}</span>
+        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${cls}`}>{badge}</span>
+      </div>
+      <span className="font-mono text-lg font-bold tracking-tight text-white">{time}</span>
+    </div>
+  );
+}
+
+function BentoScoreBlock({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div
+      className={`rounded-xl border px-3 py-2 ${highlight ? "border-[rgba(77,182,255,0.2)] bg-[rgba(77,182,255,0.07)]" : "border-white/[0.07] bg-white/[0.03]"}`}
+    >
+      <p className="text-[9px] uppercase tracking-[0.18em] text-white/35">{label}</p>
+      <p className={`mt-1 text-sm font-semibold ${highlight ? "text-[#d8efff]" : "text-white"}`}>{value}</p>
+    </div>
+  );
+}
+
+function BentoInstantCard() {
+  return (
+    <div className="flex h-full flex-col justify-between gap-6">
+      <p className="section-label">Zero barrier</p>
+      <div className="space-y-2">
+        <p className="font-[Sora] text-[3.25rem] font-bold leading-none tracking-[-0.05em] text-white">
+          &lt;&nbsp;30s
+        </p>
+        <p className="text-sm leading-relaxed text-white/55">
+          From page load to active race. No account, no app, no download required.
+        </p>
+      </div>
+      <div className="space-y-2.5">
+        {["No signup required", "Works in any browser", "Share a link to invite"].map((item) => (
+          <div key={item} className="flex items-center gap-2.5 text-sm text-white/52">
+            <svg className="h-3.5 w-3.5 flex-shrink-0 text-[var(--cm-success)]" viewBox="0 0 14 14" fill="none">
+              <path d="M2.5 7l3 3 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {item}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BentoP2PCard() {
+  return (
+    <div className="flex h-full flex-col gap-5">
+      <p className="section-label">Direct connection</p>
+      <div className="flex flex-1 items-center justify-center py-2">
+        <div className="flex w-full max-w-[200px] items-center gap-3">
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.06]">
+            <PersonIcon />
+          </div>
+          <div className="flex flex-1 flex-col items-center gap-1">
+            <div className="flex w-full items-center gap-1">
+              <div className="h-px flex-1 bg-gradient-to-r from-[rgba(77,182,255,0.7)] to-[rgba(113,240,182,0.7)]" />
+              <span className="rounded border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.18em] text-white/40">
+                WebRTC
+              </span>
+              <div className="h-px flex-1 bg-gradient-to-l from-[rgba(77,182,255,0.7)] to-[rgba(113,240,182,0.7)]" />
+            </div>
+            <span className="text-[9px] text-white/25">No relay server</span>
+          </div>
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.06]">
+            <PersonIcon />
+          </div>
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <p className="text-base font-semibold tracking-tight text-white">No relay. No lag.</p>
+        <p className="text-sm leading-relaxed text-white/50">
+          Video and timer data go directly browser-to-browser via WebRTC. No middleman in the race.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PersonIcon() {
+  return (
+    <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+    </svg>
+  );
+}
+
+function BentoPracticeCard() {
+  const bars = [52, 68, 44, 82, 71, 94, 78, 88];
+  return (
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(230px,0.9fr)]">
+      <div className="space-y-4">
+        <p className="section-label">Practice mode</p>
+        <h3 className="text-2xl font-semibold tracking-tight text-white">Every solve, tracked.</h3>
+        <p className="text-sm leading-relaxed text-white/55">
+          Full inspection timer, WCA scrambles, and session history. Ao5, Ao12, Ao50, and Ao100 computed across sessions — exportable as CSV or JSON whenever you need it.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {["Ao5", "Ao12", "Ao50", "Ao100", "Mean", "σ dev"].map((label) => (
+            <span
+              key={label}
+              className="rounded-full border border-white/[0.1] bg-white/[0.04] px-2.5 py-1 text-xs font-medium text-white/60"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <ExportBadge label="CSV" />
+          <ExportBadge label="JSON" />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/[0.08] bg-[rgba(4,8,14,0.72)] p-4 space-y-4">
+        <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-white/32">
+          <span>Last 8 solves</span>
+          <span>3×3</span>
+        </div>
+        <div className="flex h-20 items-end gap-1">
+          {bars.map((h, i) => (
+            <div key={i} className="flex-1 rounded-t-md bg-white/[0.04]">
+              <div
+                className="w-full rounded-t-md bg-gradient-to-t from-[rgba(77,182,255,0.65)] to-[rgba(113,240,182,0.88)]"
+                style={{ height: `${h}%` }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <PracticeStatTile label="Ao5" value="8.24" />
+          <PracticeStatTile label="Ao12" value="8.71" />
+          <PracticeStatTile label="Best" value="7.13" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExportBadge({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/50">
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth={1.6}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v9m0 0l-3-3m3 3l3-3M3 13h10" />
+      </svg>
+      {label}
+    </div>
+  );
+}
+
+function PracticeStatTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-white/[0.07] bg-white/[0.04] px-2.5 py-2">
+      <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/32">{label}</p>
+      <p className="mt-0.5 font-mono text-sm font-bold text-white">{value}</p>
+    </div>
+  );
+}
+
+function HowItWorksStep({ step, title, body }: { step: string; title: string; body: string }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.05]">
+        <span className="font-mono text-xs font-bold text-white/40">{step}</span>
+      </div>
+      <div className="space-y-2">
+        <h3 className="text-xl font-semibold tracking-tight text-white">{title}</h3>
+        <p className="text-sm leading-relaxed text-white/55">{body}</p>
+      </div>
+    </div>
+  );
+}
+
+// ── CINEMATIC CUBE (unchanged) ─────────────────────────────────────────────────
+
 function CinematicCube({ grand = false }: { grand?: boolean }) {
   const cubeRef = useRef<HTMLDivElement | null>(null);
   const requestRef = useRef<number | null>(null);
@@ -508,20 +582,13 @@ function CinematicCube({ grand = false }: { grand?: boolean }) {
         autoRotation.current.y += 0.28;
         autoRotation.current.z += 0.08;
       }
-
       if (cubeRef.current) {
         cubeRef.current.style.transform = `rotateX(${autoRotation.current.x}deg) rotateY(${autoRotation.current.y}deg) rotateZ(${autoRotation.current.z}deg)`;
       }
-
       requestRef.current = window.requestAnimationFrame(animate);
     };
-
     requestRef.current = window.requestAnimationFrame(animate);
-    return () => {
-      if (requestRef.current != null) {
-        window.cancelAnimationFrame(requestRef.current);
-      }
-    };
+    return () => { if (requestRef.current != null) window.cancelAnimationFrame(requestRef.current); };
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -536,13 +603,10 @@ function CinematicCube({ grand = false }: { grand?: boolean }) {
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!dragState.current.active) return;
-
     const dx = e.clientX - dragState.current.startX;
     const dy = e.clientY - dragState.current.startY;
-
     autoRotation.current.x = dragState.current.baseX - dy * 0.34;
     autoRotation.current.y = dragState.current.baseY + dx * 0.42;
-
     if (cubeRef.current) {
       cubeRef.current.style.transform = `rotateX(${autoRotation.current.x}deg) rotateY(${autoRotation.current.y}deg) rotateZ(${autoRotation.current.z}deg)`;
     }
@@ -574,9 +638,7 @@ function CinematicCube({ grand = false }: { grand?: boolean }) {
                 <div
                   key={`${x}-${y}-${z}`}
                   className={grand ? "cubelet cubelet-grand" : "cubelet"}
-                  style={{
-                    transform: `translate3d(${x * offset}px, ${y * offset}px, ${z * offset}px)`,
-                  }}
+                  style={{ transform: `translate3d(${x * offset}px, ${y * offset}px, ${z * offset}px)` }}
                 >
                   <div className="cube-face face-front" />
                   <div className="cube-face face-back" />
@@ -594,276 +656,18 @@ function CinematicCube({ grand = false }: { grand?: boolean }) {
   );
 }
 
-function ProtocolArtifact({
-  index,
-  title,
-  body,
-  type,
-}: {
-  index: number;
-  title: string;
-  body: string;
-  type: "rooms" | "feed" | "stats";
-}) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-[rgba(10,16,24,0.72)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] backdrop-blur-md sm:p-6">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(220px,0.7fr)] lg:items-center">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <span className="font-[Sora] text-5xl font-bold tracking-[-0.06em] text-white/10">
-              0{index}
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-[rgba(77,182,255,0.45)] to-transparent" />
-          </div>
-          <h3 className="text-2xl font-semibold tracking-tight text-white">{title}</h3>
-          <p className="text-sm leading-7 text-white/62 sm:text-base">{body}</p>
-        </div>
-        <div className="rounded-[24px] border border-white/10 bg-[rgba(4,8,14,0.76)] p-4">
-          {type === "rooms" ? <RoomStackArtifact /> : type === "feed" ? <LiveFeedArtifact /> : <StatsArtifact />}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EntryPathLane({
-  index,
-  label,
-  title,
-  body,
-  accent,
-  actionLabel,
-  onAction,
-}: {
-  index: number;
-  label: string;
-  title: string;
-  body: string;
-  accent: string;
-  actionLabel: string;
-  onAction: () => void;
-}) {
-  return (
-    <div className="entry-lane">
-      <div className="entry-lane-grid">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <span className="font-[Sora] text-5xl font-bold tracking-[-0.08em] text-white/12">
-              0{index}
-            </span>
-            <div className="space-y-1">
-              <p className="section-label">{label}</p>
-              <h3 className="text-2xl font-semibold tracking-tight text-white">{title}</h3>
-            </div>
-          </div>
-          <p className="max-w-2xl text-sm leading-7 text-white/64 sm:text-base">{body}</p>
-        </div>
-
-        <div className="entry-lane-aside">
-          <p className="font-[Sora] text-4xl font-bold tracking-[-0.08em] text-white/16">{accent}</p>
-          <button onClick={onAction} className="btn-secondary px-5 text-sm">
-            {actionLabel}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function JourneySequenceCard({
-  index,
-  marker,
-  title,
-  body,
-}: {
-  index: number;
-  marker: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="journey-sequence-card">
-      <div className="journey-sequence-line" />
-      <div className="journey-sequence-dot" />
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-3">
-          <p className="label-kicker">{marker}</p>
-          <h3 className="text-2xl font-semibold tracking-tight text-white">{title}</h3>
-          <p className="max-w-xl text-sm leading-7 text-white/65 sm:text-base">{body}</p>
-        </div>
-        <p className="text-[11px] uppercase tracking-[0.22em] text-white/28">0{index}</p>
-      </div>
-    </div>
-  );
-}
-
-function RoomStackArtifact() {
-  const rooms = [
-    { label: "Race room", sub: "Best-of-5 · 3×3", state: "Live", accent: "bg-[rgba(113,240,182,0.18)] text-[#d9fff0]" },
-    { label: "Private room", sub: "Waiting for player 2", state: "Waiting", accent: "bg-[rgba(77,182,255,0.18)] text-[#d8efff]" },
-    { label: "Practice session", sub: "Solo · 12 solves", state: "Active", accent: "bg-white/10 text-white/70" },
-  ];
-
-  return (
-    <div className="relative h-[170px]">
-      {rooms.map((room, index) => (
-        <div
-          key={room.label}
-          className="absolute left-0 right-0 rounded-[18px] border border-white/10 bg-[rgba(10,16,24,0.96)] px-4 py-3 transition-transform"
-          style={{
-            top: `${index * 34}px`,
-            transform: `scale(${1 - index * 0.04})`,
-            opacity: 1 - index * 0.16,
-            zIndex: 10 - index,
-          }}
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-white">{room.label}</p>
-              <p className="mt-1 text-xs text-white/42">{room.sub}</p>
-            </div>
-            <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${room.accent}`}>
-              {room.state}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function LiveFeedArtifact() {
-  const events = [
-    { label: "Round 3 complete", detail: "Your solve · 7.91s saved" },
-    { label: "Opponent inspecting", detail: "15s inspection started" },
-    { label: "Score updated", detail: "2–1 · Your lead" },
-  ];
-
-  return (
-    <div className="space-y-3 text-xs">
-      <div className="flex items-center gap-2 font-mono">
-        <span className="h-2 w-2 rounded-full bg-[var(--cm-success)] animate-pulse" />
-        <span className="uppercase tracking-[0.24em] text-[var(--cm-success)]">Live</span>
-      </div>
-      {events.map((event, index) => (
-        <div
-          key={event.label}
-          className="flex items-center justify-between gap-3 rounded-[16px] border border-white/[0.08] bg-white/[0.03] px-3 py-2.5"
-          style={{ opacity: 1 - index * 0.18 }}
-        >
-          <span className="font-medium text-white/80">{event.label}</span>
-          <span className="text-white/40">{event.detail}</span>
-        </div>
-      ))}
-      <div className="flex items-center gap-2 text-white/36">
-        <span className="inline-block h-3 w-1 rounded-full bg-[rgba(77,182,255,0.75)] animate-pulse" />
-        <span className="font-mono">syncing...</span>
-      </div>
-    </div>
-  );
-}
-
-function StatsArtifact() {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.22em] text-white/38">
-        <span>Session spread</span>
-        <span>3x3 focus</span>
-      </div>
-      <div className="flex h-24 items-end gap-2">
-        {[36, 54, 42, 72, 64, 88].map((height, index) => (
-          <div key={height} className="flex-1 rounded-t-[12px] bg-white/[0.05]">
-            <div
-              className="w-full rounded-t-[12px] bg-gradient-to-t from-[rgba(77,182,255,0.72)] to-[rgba(113,240,182,0.88)]"
-              style={{ height: `${height}%`, opacity: 0.8 + index * 0.03 }}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center justify-between text-xs text-white/48">
-        <span>Last 6 sessions</span>
-        <span>PB pressure rising</span>
-      </div>
-    </div>
-  );
-}
-
-function FeatureArtifactCard({
-  title,
-  body,
-  accent,
-}: {
-  title: string;
-  body: string;
-  accent: string;
-}) {
-  return (
-    <div className="feature-artifact-card">
-      <p className="font-[Sora] text-4xl font-bold tracking-[-0.06em] text-white">{accent}</p>
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold tracking-tight text-white">{title}</h3>
-        <p className="text-sm leading-7 text-white/62">{body}</p>
-      </div>
-    </div>
-  );
-}
-
-function MatchLane({
-  name,
-  badge,
-  time,
-  status,
-  accent,
-}: {
-  name: string;
-  badge: string;
-  time: string;
-  status: string;
-  accent: "blue" | "green";
-}) {
-  const accentClass =
-    accent === "blue"
-      ? "bg-[rgba(77,182,255,0.15)] border-[rgba(77,182,255,0.28)] text-[#d8efff]"
-      : "bg-[rgba(113,240,182,0.15)] border-[rgba(113,240,182,0.28)] text-[#ddfff2]";
-
-  return (
-    <div className="card flex items-center justify-between gap-4 p-4">
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <p className="font-semibold text-white">{name}</p>
-          <span className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${accentClass}`}>
-            {badge}
-          </span>
-        </div>
-        <p className="text-sm text-white/55">{status}</p>
-      </div>
-      <div className="text-right">
-        <p className="timer-display text-3xl text-white">{time}</p>
-        <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-white/35">latest</p>
-      </div>
-    </div>
-  );
-}
-
-function ScoreBlock({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
-      <p className="text-[10px] uppercase tracking-[0.22em] text-white/38">{label}</p>
-      <p className="mt-2 text-lg font-semibold text-white">{value}</p>
-    </div>
-  );
-}
+// ── SHARED SMALL COMPONENTS ────────────────────────────────────────────────────
 
 function SearchingLabel() {
   return (
     <span className="inline-flex items-center gap-2" role="status" aria-live="polite">
       Finding a cuber
       <span className="inline-flex items-end gap-0.5" aria-hidden="true">
-        {[0, 1, 2].map((index) => (
+        {[0, 1, 2].map((i) => (
           <span
-            key={index}
+            key={i}
             className="motion-search-dot h-1 w-1 rounded-full bg-current"
-            style={{ "--motion-delay": `${index * 120}ms` } as React.CSSProperties}
+            style={{ "--motion-delay": `${i * 120}ms` } as React.CSSProperties}
           />
         ))}
       </span>
@@ -890,11 +694,7 @@ function PlusIcon({ className }: { className?: string }) {
 function UsersIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
     </svg>
   );
 }
