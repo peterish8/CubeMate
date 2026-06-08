@@ -305,27 +305,28 @@ export function LandingPage() {
                   </Link>
                 </div>
 
-                <div className="border-t border-white/10 pt-6 space-y-4" id="backup-sync">
-                  {isConvexConfigured() ? (
+                {isConvexConfigured() && (
+                  <div className="border-t border-white/[0.08] pt-6" id="backup-sync">
                     <div className="finale-auth-card">
-                      <p className="text-sm font-semibold text-white mb-0.5">Back up your solves</p>
-                      <p className="text-xs text-white/45 mb-4">Sign in to sync across all your devices. Free forever.</p>
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div>
+                          <p className="text-sm font-semibold text-white">Back up your solves</p>
+                          <p className="text-xs text-white/40 mt-0.5">Sync across all devices. Free forever.</p>
+                        </div>
+                        <span className="flex-shrink-0 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--cm-success)] bg-[rgba(113,240,182,0.08)] border border-[rgba(113,240,182,0.2)] rounded-full px-2.5 py-1">
+                          Free
+                        </span>
+                      </div>
                       <AuthPanel />
                     </div>
-                  ) : (
-                    <p className="text-sm leading-7 text-white/52">
-                      Cloud sync is optional. Add Convex later for backup across devices and the dashboard.
-                    </p>
-                  )}
-                  <div className="grid gap-2 text-sm text-white/45 sm:grid-cols-4 pt-2">
-                    <Link to="/practice" className="transition-colors hover:text-white">Practice</Link>
-                    <button onClick={handleCreate} className="text-left transition-colors hover:text-white">Create room</button>
-                    <button onClick={handleFindCuber} className="text-left transition-colors hover:text-white">Random match</button>
-                    {isConvexConfigured() && (
-                      <Link to="/dashboard" className="transition-colors hover:text-white">Dashboard</Link>
-                    )}
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-[13px] text-white/35">
+                      <Link to="/practice" className="transition-colors hover:text-white/70">Practice</Link>
+                      <button onClick={handleCreate} className="transition-colors hover:text-white/70">Create room</button>
+                      <button onClick={handleFindCuber} className="transition-colors hover:text-white/70">Random match</button>
+                      <Link to="/dashboard" className="transition-colors hover:text-white/70">Dashboard</Link>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <div className="finale-cube-stage hidden lg:flex">

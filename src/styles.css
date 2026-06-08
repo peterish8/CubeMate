@@ -974,28 +974,13 @@
   }
 
   .practice-timer-bars {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 54px;
-    background: linear-gradient(180deg, rgba(3, 5, 8, 0.96), rgba(3, 5, 8, 0.68));
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .practice-timer-bars-top {
-    top: 0;
-  }
-
-  .practice-timer-bars-bottom {
-    bottom: 0;
-    transform: rotate(180deg);
+    display: none;
   }
 
   .practice-timer-top {
     position: relative;
     z-index: 2;
-    padding: 18px 24px 14px;
+    padding: 18px 48px 14px;
   }
 
   .practice-page-shell-system .practice-timer-top {
@@ -1018,11 +1003,11 @@
   }
 
   .practice-scramble-copy {
-    color: rgba(237, 244, 255, 0.76);
+    color: rgba(237, 244, 255, 0.88);
     font-family: "IBM Plex Mono", monospace;
-    font-size: clamp(0.95rem, 1vw, 1.1rem);
-    line-height: 1.55;
-    letter-spacing: 0.08em;
+    font-size: clamp(1.1rem, 1.6vw, 1.45rem);
+    line-height: 1.6;
+    letter-spacing: 0.1em;
     text-align: center;
   }
 
