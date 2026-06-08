@@ -679,9 +679,9 @@ function HeaderAuthButton() {
     );
   }
   return (
-    <a href="#backup-sync" className="text-white/58 transition-colors hover:text-white text-sm">
+    <Link to="/signin" className="text-white/58 transition-colors hover:text-white text-sm">
       Sign in
-    </a>
+    </Link>
   );
 }
 

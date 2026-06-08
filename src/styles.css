@@ -1833,6 +1833,31 @@
     text-transform: uppercase;
   }
 
+  /* ── Sign In Page ───────────────────────────────────── */
+
+  .signin-shell {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(77, 182, 255, 0.1), transparent 28%),
+      radial-gradient(circle at 76% 80%, rgba(113, 240, 182, 0.07), transparent 22%);
+  }
+
+  .signin-card {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(180deg, rgba(16, 24, 36, 0.98), rgba(11, 17, 26, 0.98));
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 28px;
+    padding: 36px 32px 32px;
+    box-shadow:
+      0 32px 80px rgba(0, 0, 0, 0.42),
+      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  }
+
   /* ── App Navigation ─────────────────────────────────── */
 
   .app-nav {
