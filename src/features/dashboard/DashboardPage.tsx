@@ -59,7 +59,7 @@ function DashboardWithAuth() {
     );
   }
 
-  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (!isAuthenticated) return <Navigate to="/signin" replace />;
 
   return <DashboardShell cloudRows={overview} cloudTotals={totals} />;
 }

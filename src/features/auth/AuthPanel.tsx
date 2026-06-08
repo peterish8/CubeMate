@@ -1,5 +1,5 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { isConvexConfigured } from "../../persistence";
 

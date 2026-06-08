@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth } from "@convex-dev/auth/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 
 const NAV_LINKS = [

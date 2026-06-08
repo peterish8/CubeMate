@@ -1,19 +1,20 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
-import { useMemo, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { isConvexConfigured } from "../persistence";
 import { CloudSyncRegistrar } from "./CloudSyncRegistrar";
 
+const convexClient = isConvexConfigured()
+  ? new ConvexReactClient(import.meta.env.VITE_CONVEX_URL!)
+  : null;
+
 export function ConvexShell({ children }: { children: ReactNode }) {
-  if (!isConvexConfigured()) {
+  if (!convexClient) {
     return <>{children}</>;
   }
 
-  const url = import.meta.env.VITE_CONVEX_URL!;
-  const client = useMemo(() => new ConvexReactClient(url), [url]);
-
   return (
-    <ConvexAuthProvider client={client}>
+    <ConvexAuthProvider client={convexClient}>
       <CloudSyncRegistrar />
       {children}
     </ConvexAuthProvider>

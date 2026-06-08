@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth } from "@convex-dev/auth/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { AuthPanel } from "../auth/AuthPanel";
 import { usePairing } from "../pairing/usePairing";
@@ -39,7 +39,7 @@ export function LandingPage() {
   const [matchError, setMatchError] = useState("");
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/dashboard");
+    if (isAuthenticated) navigate("/dashboard", { replace: true });
   }, [isAuthenticated, navigate]);
 
   const pairing = usePairing({

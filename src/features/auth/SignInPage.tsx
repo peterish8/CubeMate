@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth } from "@convex-dev/auth/react";
 import { AuthPanel } from "./AuthPanel";
 import { isConvexConfigured } from "../../persistence";
 

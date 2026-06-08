@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth } from "@convex-dev/auth/react";
 import { AppNav } from "../nav/AppNav";
 import { SessionsPanel } from "../session/sessions/SessionsPanel";
 import { useSession } from "../session/useSession";
