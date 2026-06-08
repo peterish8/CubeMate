@@ -1,12 +1,13 @@
 import { useConvexAuth } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { api } from "../../../convex/_generated/api";
-import type { CubeEvent } from "../../domain/types";
+import type { CubeEvent, Solve } from "../../domain/types";
 import { WCA_EVENTS } from "../../domain/types";
 import { formatTime } from "../../domain/timer/timerEngine";
 import { isConvexConfigured } from "../../persistence";
 import { AppNav } from "../nav/AppNav";
+import { useSession } from "../session/useSession";
 
 interface EventSummaryRow {
   event: CubeEvent;
@@ -19,37 +20,24 @@ interface GlobalTotals {
   activeEvents: number;
 }
 
+function makeRoomCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
 export function DashboardPage() {
-  if (!isConvexConfigured()) {
-    return <ConvexNotConfigured />;
-  }
-  return <DashboardAuthed />;
+  if (!isConvexConfigured()) return <DashboardShell />;
+  return <DashboardWithAuth />;
 }
 
-function ConvexNotConfigured() {
-  return (
-    <div className="page-shell flex items-center justify-center px-4 py-12">
-      <div className="section-wrap max-w-2xl">
-        <div className="hero-band p-8 text-center">
-          <p className="section-label">Cloud dashboard unavailable</p>
-          <h1 className="display-title mt-4 text-4xl text-white">Connect Convex to unlock synced stats.</h1>
-          <p className="mt-4 text-white/65 leading-7 max-w-xl mx-auto">
-            Add <code className="text-white/80">VITE_CONVEX_URL</code> in{" "}
-            <code className="text-white/80">.env.local</code>, then run{" "}
-            <code className="text-white/80">npx convex dev</code>.
-          </p>
-          <div className="mt-6">
-            <Link to="/" className="btn-secondary px-6">
-              Back home
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DashboardAuthed() {
+function DashboardWithAuth() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const overview = useQuery(
     api.stats.eventOverview,
@@ -62,252 +50,290 @@ function DashboardAuthed() {
 
   if (isLoading) {
     return (
-      <div className="page-shell flex items-center justify-center px-4 py-12">
-        <div className="card px-6 py-5 text-sm text-white/55">Loading dashboard...</div>
+      <div className="page-shell">
+        <AppNav />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <span className="text-white/30 text-sm">Loading...</span>
+        </div>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  if (!isAuthenticated) return <Navigate to="/" replace />;
 
-  const eventMeta = new Map(WCA_EVENTS.map((event) => [event.id, event.label]));
-  const rows = overview ?? [];
-  const totalSolves = totals?.totalSolves ?? 0;
-  const activeEvents = totals?.activeEvents ?? 0;
-  const rankedByPractice = rows
-    .filter((row) => row.solveCount > 0)
-    .sort((a, b) => b.solveCount - a.solveCount || (a.bestMs ?? Number.MAX_SAFE_INTEGER) - (b.bestMs ?? Number.MAX_SAFE_INTEGER));
-  const rankedBySpeed = rows
-    .filter((row) => row.bestMs != null)
-    .sort((a, b) => (a.bestMs ?? Number.MAX_SAFE_INTEGER) - (b.bestMs ?? Number.MAX_SAFE_INTEGER));
+  return <DashboardShell cloudRows={overview} cloudTotals={totals} />;
+}
 
-  const mostPracticed = rankedByPractice[0];
-  const fastestEvent = rankedBySpeed[0];
-  const coverage = Math.round((activeEvents / WCA_EVENTS.length) * 100);
-  const trackedEvents = rows.filter((row) => row.solveCount > 0).length;
-  const untrackedEvents = WCA_EVENTS.length - trackedEvents;
-  const hasData = totalSolves > 0;
+function DashboardShell({
+  cloudRows,
+  cloudTotals,
+}: {
+  cloudRows?: EventSummaryRow[];
+  cloudTotals?: GlobalTotals;
+} = {}) {
+  const session = useSession();
+  const navigate = useNavigate();
+
+  const allSolves = session.allSolves;
+  const totalLocal = allSolves.length;
+  const totalSessions = session.sessions.length;
+
+  const valid333 = allSolves.filter(s => s.event === "333" && s.finalTimeMs !== null);
+  const best333 =
+    valid333.length > 0
+      ? Math.min(...valid333.map(s => s.finalTimeMs as number))
+      : null;
+
+  const last5valid = allSolves.filter(s => s.finalTimeMs !== null).slice(-5);
+  const ao5 =
+    last5valid.length === 5
+      ? Math.round(last5valid.reduce((sum, s) => sum + (s.finalTimeMs as number), 0) / 5)
+      : null;
+
+  const recentSolves = [...allSolves].reverse().slice(0, 10);
 
   return (
     <div className="page-shell">
       <AppNav />
-      <section className="section-wrap pt-8 pb-6 sm:pt-10 sm:pb-8 relative z-10">
-        <div className="hero-band p-6 sm:p-8 lg:p-10">
-          <div className="space-y-4 max-w-2xl">
-            <p className="section-label">Training dashboard</p>
-            <h1 className="display-title text-4xl sm:text-5xl text-white">
-              Read the shape of your practice, not just the raw solve count.
-            </h1>
-            <p className="text-white/65 leading-7 text-base sm:text-lg">
-              Track event coverage, spot your strongest category, and see where the next useful
-              session should go.
-            </p>
-          </div>
+      <div className="section-wrap py-7 pb-20 space-y-5 relative z-10">
 
-          <div className="dashboard-grid mt-8">
-            <SummaryTile
-              index={0}
-              label="Total solves"
-              value={String(totalSolves)}
-              note={hasData ? "All synced attempts across your tracked sessions." : "No synced solves yet."}
-            />
-            <SummaryTile
-              index={1}
-              label="Active events"
-              value={String(activeEvents)}
-              note={hasData ? `${coverage}% of WCA events covered.` : "Start with one event and build outward."}
-            />
-            <SummaryTile
-              index={2}
-              label="Fastest event"
-              value={fastestEvent ? eventMeta.get(fastestEvent.event) ?? fastestEvent.event : "None yet"}
-              note={fastestEvent?.bestMs != null ? `Best single ${formatTime(fastestEvent.bestMs)}.` : "A best single will appear after your first tracked solve."}
-            />
-            <SummaryTile
-              index={3}
-              label="Most practiced"
-              value={mostPracticed ? eventMeta.get(mostPracticed.event) ?? mostPracticed.event : "None yet"}
-              note={mostPracticed ? `${mostPracticed.solveCount} solve${mostPracticed.solveCount === 1 ? "" : "s"} logged.` : "Your highest-volume event will show here."}
-            />
+        {/* ── Header ── */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-1">
+          <div>
+            <p className="section-label">{greeting()}</p>
+            <h1 className="display-title mt-2 text-3xl sm:text-4xl text-white">Your training hub</h1>
+            {totalLocal > 0 && (
+              <p className="mt-1.5 text-sm text-white/38">
+                {totalLocal} solve{totalLocal !== 1 ? "s" : ""} · {totalSessions} session{totalSessions !== 1 ? "s" : ""}
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2.5">
+            <button
+              type="button"
+              onClick={() => navigate(`/room/${makeRoomCode()}`)}
+              className="btn-primary text-sm min-h-[40px] px-5"
+            >
+              Play
+            </button>
+            <Link to="/practice" className="btn-secondary text-sm min-h-[40px] px-5">
+              Practice
+            </Link>
           </div>
         </div>
-      </section>
 
-      <section className="section-wrap py-4 sm:py-6">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-          <InsightCard
-            title={hasData ? "Current read" : "Get your first solves in"}
-            body={
-              hasData
-                ? buildInsightSentence({
-                    fastestEventLabel: fastestEvent ? eventMeta.get(fastestEvent.event) ?? fastestEvent.event : null,
-                    mostPracticedLabel: mostPracticed ? eventMeta.get(mostPracticed.event) ?? mostPracticed.event : null,
-                    untrackedEvents,
-                  })
-                : "The dashboard is ready. Log a few solves in practice or during races and CubeMate will start surfacing your strongest event and your training spread."
-            }
-            footer={hasData ? `${trackedEvents} tracked event${trackedEvents === 1 ? "" : "s"} so far.` : "Practice mode is the fastest way to seed useful stats."}
+        {/* ── Stat Cards ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <DashStatCard
+            label="Total Solves"
+            value={totalLocal > 0 ? totalLocal.toLocaleString() : "—"}
+            sub={cloudTotals ? `${cloudTotals.totalSolves} cloud synced` : "local session"}
+            accent="blue"
           />
-          <InsightCard
-            title="Coverage"
-            body={
-              hasData
-                ? untrackedEvents === 0
-                  ? "You have solve data across every WCA event currently listed in CubeMate."
-                  : `${untrackedEvents} event${untrackedEvents === 1 ? "" : "s"} still have no synced solves. Fill those gaps if you want a broader training profile.`
-                : "Coverage starts at zero until cloud-synced solves exist for this account."
-            }
-            footer={hasData ? `${coverage}% event coverage across the board.` : "Connect practice to sync and revisit."}
+          <DashStatCard
+            label="Best 3×3"
+            value={best333 != null ? formatTime(best333) : "—"}
+            sub="single"
+            accent="green"
+          />
+          <DashStatCard
+            label="Ao5"
+            value={ao5 != null ? formatTime(ao5) : "—"}
+            sub="last 5 valid solves"
+            accent="amber"
+          />
+          <DashStatCard
+            label="Sessions"
+            value={totalSessions > 0 ? String(totalSessions) : "—"}
+            sub={cloudTotals ? `${cloudTotals.activeEvents} events tracked` : "all time"}
+            accent="purple"
           />
         </div>
-      </section>
 
-      <section className="section-wrap pt-4 pb-16 sm:pb-20">
-        {hasData ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {WCA_EVENTS.map(({ id, label }, index) => {
-              const row = rows.find((item) => item.event === id);
-              const count = row?.solveCount ?? 0;
-              const best = row?.bestMs;
-              const emphasis =
-                mostPracticed?.event === id
-                  ? "Most practiced"
-                  : fastestEvent?.event === id
-                    ? "Fastest best"
-                    : count === 0
-                      ? "Awaiting data"
-                      : "Tracked";
+        {/* ── Main Content: recent solves + quick actions ── */}
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <RecentSolvesCard solves={recentSolves} />
+          <QuickActionsCard navigate={navigate} />
+        </div>
 
-              return (
-                <div
-                  key={id}
-                  className="stat-tile motion-dashboard-card motion-hover-card"
-                  style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="section-label">{id}</p>
-                      <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">{label}</h2>
-                    </div>
-                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-white/58">
-                      {emphasis}
-                    </span>
-                  </div>
-
-                  <div className="mt-8 flex items-end justify-between gap-4">
-                    <div>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-white/36">Best single</p>
-                      <p className="metric-number mt-3 text-3xl text-white">
-                        {best != null ? formatTime(best) : "--"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-white/36">Solve count</p>
-                      <p className="mt-3 text-2xl font-semibold tracking-tight text-white">{count}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 h-2 rounded-full bg-white/[0.05] overflow-hidden">
-                    <div
-                      className="motion-progress h-full rounded-full bg-gradient-to-r from-[#1a84ff] to-[#71f0b6]"
-                      style={{
-                        width: `${Math.max(10, mostPracticed ? Math.round((count / Math.max(mostPracticed.solveCount, 1)) * 100) : 10)}%`,
-                        opacity: count === 0 ? 0.22 : 1,
-                        animationDelay: `${160 + Math.min(index * 45, 360)}ms`,
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="card-elevated p-8 sm:p-10 text-center">
-            <p className="section-label">No synced solves yet</p>
-            <h2 className="display-title mt-4 text-3xl sm:text-4xl text-white">
-              Start a few sessions and this becomes your training map.
-            </h2>
-            <p className="mt-4 max-w-2xl mx-auto text-white/65 leading-7">
-              Once solves hit the cloud, CubeMate will highlight your most practiced event, your
-              fastest category, and where your event coverage is still thin.
-            </p>
-            <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/practice" className="btn-primary px-6">
-                Open practice
-              </Link>
-              <Link to="/" className="btn-secondary px-6">
-                Back to landing
-              </Link>
-            </div>
-          </div>
+        {/* ── Cloud Event Coverage ── */}
+        {cloudRows && cloudRows.some(r => r.solveCount > 0) && (
+          <EventCoverageSection rows={cloudRows} />
         )}
-      </section>
+      </div>
     </div>
   );
 }
 
-function SummaryTile({
-  index,
+function DashStatCard({
   label,
   value,
-  note,
+  sub,
+  accent,
 }: {
-  index: number;
   label: string;
   value: string;
-  note: string;
+  sub: string;
+  accent: "blue" | "green" | "amber" | "purple";
 }) {
+  const valueColor: Record<typeof accent, string> = {
+    blue: "text-[#4db6ff]",
+    green: "text-[#71f0b6]",
+    amber: "text-[#ffb14a]",
+    purple: "text-[#c084fc]",
+  };
+
   return (
-    <div
-      className="stat-tile motion-dashboard-card motion-hover-card"
-      style={{ animationDelay: `${index * 70}ms` }}
-    >
+    <div className="card p-5 sm:p-6 motion-enter">
       <p className="section-label">{label}</p>
-      <p className="metric-number mt-5 text-3xl sm:text-4xl text-white">{value}</p>
-      <p className="mt-4 text-sm text-white/58 leading-6">{note}</p>
+      <p className={`metric-number mt-4 text-3xl sm:text-4xl ${valueColor[accent]}`}>{value}</p>
+      <p className="mt-2 text-xs text-white/30">{sub}</p>
     </div>
   );
 }
 
-function InsightCard({
-  title,
-  body,
-  footer,
-}: {
-  title: string;
-  body: string;
-  footer: string;
-}) {
+function RecentSolvesCard({ solves }: { solves: Solve[] }) {
+  if (solves.length === 0) {
+    return (
+      <div className="card p-8 flex flex-col items-center justify-center gap-2 text-center min-h-[200px]">
+        <p className="text-white/30 text-sm font-medium">No solves yet</p>
+        <p className="text-white/18 text-xs">Complete a solve to see your history</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="card motion-enter motion-hover-card p-6 sm:p-7">
-      <h2 className="text-xl font-semibold tracking-tight text-white">{title}</h2>
-      <p className="mt-4 text-white/65 leading-7">{body}</p>
-      <p className="mt-5 text-sm text-white/46">{footer}</p>
+    <div className="card overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+        <h2 className="text-sm font-semibold text-white">Recent solves</h2>
+        <Link to="/solves" className="text-xs text-[#4db6ff] hover:text-[#8cd8ff] transition-colors">
+          See all →
+        </Link>
+      </div>
+      <div className="divide-y divide-white/[0.04]">
+        {solves.map((solve, i) => {
+          const isDNF = solve.penalty === "DNF";
+          const is2 = solve.penalty === "+2";
+          const displayTime = isDNF
+            ? "DNF"
+            : formatTime(solve.finalTimeMs ?? solve.rawTimeMs);
+          const date = new Date(solve.endedAt).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          });
+
+          return (
+            <div
+              key={String(solve.id ?? i)}
+              className="flex items-center justify-between px-5 py-3 hover:bg-white/[0.02] transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/28 w-12 flex-shrink-0">
+                  {solve.event}
+                </span>
+                <span
+                  className={`font-mono font-semibold text-sm ${
+                    isDNF
+                      ? "text-[#ff7d6c]"
+                      : is2
+                        ? "text-[#ffb14a]"
+                        : "text-white"
+                  }`}
+                >
+                  {displayTime}{is2 ? "+" : ""}
+                </span>
+              </div>
+              <span className="text-[11px] text-white/28 flex-shrink-0">{date}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function buildInsightSentence({
-  fastestEventLabel,
-  mostPracticedLabel,
-  untrackedEvents,
-}: {
-  fastestEventLabel: string | null;
-  mostPracticedLabel: string | null;
-  untrackedEvents: number;
-}) {
-  const fastestPart = fastestEventLabel
-    ? `${fastestEventLabel} is currently your quickest tracked event`
-    : "You do not have a fastest tracked event yet";
-  const volumePart = mostPracticedLabel
-    ? `${mostPracticedLabel} carries the most volume`
-    : "no event has built enough volume yet";
-  const spreadPart =
-    untrackedEvents > 0
-      ? `and ${untrackedEvents} event${untrackedEvents === 1 ? "" : "s"} still have no synced solves.`
-      : "and you already have full event coverage.";
+function QuickActionsCard({ navigate }: { navigate: ReturnType<typeof useNavigate> }) {
+  const accentHover: Record<string, string> = {
+    blue: "hover:border-[rgba(77,182,255,0.22)] hover:bg-[rgba(77,182,255,0.04)]",
+    green: "hover:border-[rgba(113,240,182,0.22)] hover:bg-[rgba(113,240,182,0.04)]",
+    amber: "hover:border-[rgba(255,177,74,0.22)] hover:bg-[rgba(255,177,74,0.04)]",
+    purple: "hover:border-[rgba(192,132,252,0.22)] hover:bg-[rgba(192,132,252,0.04)]",
+  };
 
-  return `${fastestPart}, ${volumePart}, ${spreadPart}`;
+  const actions = [
+    { label: "Solo Practice", desc: "Timer, scramble, session stats", onClick: () => navigate("/practice"), accent: "blue" },
+    { label: "Create Private Room", desc: "Share code with a friend", onClick: () => navigate(`/room/${makeRoomCode()}`), accent: "green" },
+    { label: "View All Solves", desc: "Full history with export", onClick: () => navigate("/solves"), accent: "amber" },
+    { label: "Find Random Cuber", desc: "Random matchmaking queue", onClick: () => navigate("/"), accent: "purple" },
+  ];
+
+  return (
+    <div className="card p-4 flex flex-col gap-2">
+      <h2 className="text-sm font-semibold text-white px-1 pt-1 mb-1">Quick start</h2>
+      {actions.map(({ label, desc, onClick, accent }) => (
+        <button
+          key={label}
+          type="button"
+          onClick={onClick}
+          className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all group ${accentHover[accent]}`}
+        >
+          <div className="text-left">
+            <p className="text-sm font-medium text-white">{label}</p>
+            <p className="text-xs text-white/38 mt-0.5">{desc}</p>
+          </div>
+          <span className="text-white/22 group-hover:text-white/60 transition-colors text-lg leading-none ml-3">→</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function EventCoverageSection({ rows }: { rows: EventSummaryRow[] }) {
+  const eventMeta = new Map(WCA_EVENTS.map(e => [e.id, e.label]));
+  const withData = rows.filter(r => r.solveCount > 0);
+  const maxSolves = Math.max(...withData.map(r => r.solveCount), 1);
+
+  return (
+    <div className="card overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+        <h2 className="text-sm font-semibold text-white">Event coverage</h2>
+        <span className="text-xs text-white/35">
+          {withData.length} / {WCA_EVENTS.length} events
+        </span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {withData.map((row, i) => (
+          <div
+            key={row.event}
+            className={`px-5 py-4 ${
+              i < withData.length - 1 ? "border-b border-white/[0.04] lg:border-b-0 lg:border-r" : ""
+            }`}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-white/28 font-semibold">
+                  {row.event}
+                </p>
+                <p className="text-sm font-medium text-white mt-0.5">
+                  {eventMeta.get(row.event) ?? row.event}
+                </p>
+              </div>
+              <span className="text-xs text-white/35 font-mono flex-shrink-0">{row.solveCount}×</span>
+            </div>
+            <p className="text-xl font-semibold text-white mt-2">
+              {row.bestMs != null ? formatTime(row.bestMs) : "—"}
+            </p>
+            <div className="mt-2 h-1 rounded-full bg-white/[0.06] overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#1a84ff] to-[#71f0b6]"
+                style={{
+                  width: `${Math.max(8, Math.round((row.solveCount / maxSolves) * 100))}%`,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
