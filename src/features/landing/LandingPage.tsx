@@ -305,29 +305,25 @@ export function LandingPage() {
                   </Link>
                 </div>
 
-                <div className="grid gap-4 border-t border-white/10 pt-6 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                  <div className="space-y-3" id="backup-sync">
-                    <p className="section-label">Backup and sync</p>
-                    {isConvexConfigured() ? (
-                      <div className="finale-auth-card"><AuthPanel /></div>
-                    ) : (
-                      <p className="text-sm leading-7 text-white/52">
-                        Cloud sync is optional. Add Convex later for backup across devices and the dashboard.
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    <p className="section-label">Navigate</p>
-                    <div className="grid gap-2 text-sm text-white/56 sm:grid-cols-2">
-                      <Link to="/practice" className="transition-colors hover:text-white">Practice</Link>
-                      <button onClick={handleCreate} className="text-left transition-colors hover:text-white">Create room</button>
-                      <button onClick={handleFindCuber} className="text-left transition-colors hover:text-white">Random match</button>
-                      {isConvexConfigured() ? (
-                        <Link to="/dashboard" className="transition-colors hover:text-white">Dashboard</Link>
-                      ) : (
-                        <span className="text-white/28">Dashboard optional</span>
-                      )}
+                <div className="border-t border-white/10 pt-6 space-y-4" id="backup-sync">
+                  {isConvexConfigured() ? (
+                    <div className="finale-auth-card">
+                      <p className="text-sm font-semibold text-white mb-0.5">Back up your solves</p>
+                      <p className="text-xs text-white/45 mb-4">Sign in to sync across all your devices. Free forever.</p>
+                      <AuthPanel />
                     </div>
+                  ) : (
+                    <p className="text-sm leading-7 text-white/52">
+                      Cloud sync is optional. Add Convex later for backup across devices and the dashboard.
+                    </p>
+                  )}
+                  <div className="grid gap-2 text-sm text-white/45 sm:grid-cols-4 pt-2">
+                    <Link to="/practice" className="transition-colors hover:text-white">Practice</Link>
+                    <button onClick={handleCreate} className="text-left transition-colors hover:text-white">Create room</button>
+                    <button onClick={handleFindCuber} className="text-left transition-colors hover:text-white">Random match</button>
+                    {isConvexConfigured() && (
+                      <Link to="/dashboard" className="transition-colors hover:text-white">Dashboard</Link>
+                    )}
                   </div>
                 </div>
               </div>
