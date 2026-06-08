@@ -1832,6 +1832,155 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
   }
+
+  /* ── App Navigation ─────────────────────────────────── */
+
+  .app-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(8, 12, 17, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .app-nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: var(--cm-max-width);
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 52px;
+  }
+
+  .app-nav-logo {
+    font-family: "Sora", "IBM Plex Sans", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    color: #fff;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+
+  .app-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+  }
+
+  .app-nav-link {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(237, 244, 255, 0.52);
+    transition: color 160ms ease, background 160ms ease;
+    white-space: nowrap;
+  }
+
+  .app-nav-link:hover {
+    color: rgba(237, 244, 255, 0.88);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .app-nav-link-active {
+    color: #fff;
+    background: rgba(77, 182, 255, 0.12);
+  }
+
+  .app-nav-link-active:hover {
+    background: rgba(77, 182, 255, 0.16);
+  }
+
+  .app-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .app-nav-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, var(--cm-accent-strong), var(--cm-accent));
+    box-shadow: 0 6px 16px rgba(26, 132, 255, 0.28);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .app-nav-play:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(26, 132, 255, 0.36);
+  }
+
+  .app-nav-signout {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(237, 244, 255, 0.36);
+    transition: color 160ms ease;
+    padding: 4px 8px;
+  }
+
+  .app-nav-signout:hover {
+    color: rgba(237, 244, 255, 0.68);
+  }
+
+  .app-nav-burger {
+    font-size: 20px;
+    color: rgba(237, 244, 255, 0.6);
+    padding: 4px 6px;
+    line-height: 1;
+    transition: color 160ms ease;
+  }
+
+  .app-nav-burger:hover {
+    color: #fff;
+  }
+
+  .app-nav-mobile-drawer {
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+    background: rgba(8, 12, 17, 0.96);
+    padding: 8px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .app-nav-drawer-link {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(237, 244, 255, 0.55);
+    transition: color 160ms ease, background 160ms ease;
+  }
+
+  .app-nav-drawer-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .app-nav-drawer-link-active {
+    color: #fff;
+    background: rgba(77, 182, 255, 0.1);
+  }
+
+  .app-nav-drawer-divider {
+    height: 1px;
+    background: rgba(148, 163, 184, 0.1);
+    margin: 6px 0;
+  }
 }
 
 ::-webkit-scrollbar {

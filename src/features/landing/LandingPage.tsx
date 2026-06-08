@@ -33,9 +33,14 @@ function generateRoomCode(): string {
 
 export function LandingPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useConvexAuth();
   const [joinCode, setJoinCode] = useState("");
   const [error, setError] = useState("");
   const [matchError, setMatchError] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard");
+  }, [isAuthenticated, navigate]);
 
   const pairing = usePairing({
     onMatched: (roomCode) => {

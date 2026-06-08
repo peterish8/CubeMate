@@ -6,6 +6,7 @@ import type { CubeEvent } from "../../domain/types";
 import { WCA_EVENTS } from "../../domain/types";
 import { formatTime } from "../../domain/timer/timerEngine";
 import { isConvexConfigured } from "../../persistence";
+import { AppNav } from "../nav/AppNav";
 
 interface EventSummaryRow {
   event: CubeEvent;
@@ -91,27 +92,18 @@ function DashboardAuthed() {
 
   return (
     <div className="page-shell">
-      <section className="section-wrap pt-8 pb-6 sm:pt-10 sm:pb-8">
+      <AppNav />
+      <section className="section-wrap pt-8 pb-6 sm:pt-10 sm:pb-8 relative z-10">
         <div className="hero-band p-6 sm:p-8 lg:p-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="space-y-4 max-w-2xl">
-              <p className="section-label">Training dashboard</p>
-              <h1 className="display-title text-4xl sm:text-5xl text-white">
-                Read the shape of your practice, not just the raw solve count.
-              </h1>
-              <p className="text-white/65 leading-7 text-base sm:text-lg">
-                Track event coverage, spot your strongest category, and see where the next useful
-                session should go.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/practice" className="btn-secondary px-6">
-                Practice
-              </Link>
-              <Link to="/" className="btn-secondary px-6">
-                Home
-              </Link>
-            </div>
+          <div className="space-y-4 max-w-2xl">
+            <p className="section-label">Training dashboard</p>
+            <h1 className="display-title text-4xl sm:text-5xl text-white">
+              Read the shape of your practice, not just the raw solve count.
+            </h1>
+            <p className="text-white/65 leading-7 text-base sm:text-lg">
+              Track event coverage, spot your strongest category, and see where the next useful
+              session should go.
+            </p>
           </div>
 
           <div className="dashboard-grid mt-8">

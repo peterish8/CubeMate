@@ -42,8 +42,8 @@ export function PracticePage() {
       {systemFlashActive && <div className="practice-system-flash" aria-hidden="true" />}
 
       <header className="practice-header">
-        <Link to="/" className="practice-home-link">
-          ← Home
+        <Link to="/dashboard" className="practice-home-link">
+          ← Dashboard
         </Link>
         <div className="practice-header-center">
           <span className="section-label">CubeMate</span>
