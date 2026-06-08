@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useConvexAuth } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { AuthPanel } from "../auth/AuthPanel";
 import { usePairing } from "../pairing/usePairing";
 import { isConvexConfigured } from "../../persistence";
@@ -96,6 +98,7 @@ export function LandingPage() {
                     Dashboard
                   </Link>
                 )}
+                {isConvexConfigured() && <HeaderAuthButton />}
                 <button onClick={handleCreate} className="btn-secondary min-h-[42px] px-5 text-sm">
                   Create room
                 </button>
@@ -303,7 +306,7 @@ export function LandingPage() {
                 </div>
 
                 <div className="grid gap-4 border-t border-white/10 pt-6 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                  <div className="space-y-3">
+                  <div className="space-y-3" id="backup-sync">
                     <p className="section-label">Backup and sync</p>
                     {isConvexConfigured() ? (
                       <div className="finale-auth-card"><AuthPanel /></div>
@@ -653,6 +656,30 @@ function CinematicCube({ grand = false }: { grand?: boolean }) {
         )}
       </div>
     </div>
+  );
+}
+
+// ── HEADER AUTH BUTTON ────────────────────────────────────────────────────────
+
+function HeaderAuthButton() {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { signOut } = useAuthActions();
+  if (isLoading) return null;
+  if (isAuthenticated) {
+    return (
+      <button
+        type="button"
+        onClick={() => void signOut()}
+        className="text-sm text-[#8cd8ff] transition-colors hover:text-white"
+      >
+        Sign out
+      </button>
+    );
+  }
+  return (
+    <a href="#backup-sync" className="text-white/58 transition-colors hover:text-white text-sm">
+      Sign in
+    </a>
   );
 }
 
