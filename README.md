@@ -1,31 +1,6 @@
-<div align="center">
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366f1,50:8b5cf6,100:06b6d4&height=200&section=header&text=CubeMate&fontSize=72&fontColor=ffffff&fontAlignY=38&desc=Real-time%20P2P%20Speedcubing%20Races&descAlignY=58&descSize=20&animation=fadeIn" width="100%"/>
-
-<br/>
-
-[![Live Demo](https://img.shields.io/badge/▲%20Live%20on%20Vercel-cubemate--liart.vercel.app-6366f1?style=for-the-badge&logo=vercel&logoColor=white)](https://cubemate-liart.vercel.app)
-&nbsp;
-[![GitHub](https://img.shields.io/badge/GitHub-peterish8%2FCubeMate-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/peterish8/CubeMate)
-&nbsp;
-[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
-
-<br/>
-
-[![React](https://img.shields.io/badge/React_18-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vite.dev)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![WebRTC](https://img.shields.io/badge/WebRTC-333333?style=flat-square&logo=webrtc&logoColor=white)](https://webrtc.org)
-[![Convex](https://img.shields.io/badge/Convex-EE342F?style=flat-square&logo=convex&logoColor=white)](https://convex.dev)
-
-<br/>
-
-> **Race your friends in real-time. No accounts. No servers storing your data. Just pure speedcubing.**
-
-<br/>
-
-</div>
+<p align="center">
+  <img src="assets/readme/banner.png" alt="CubeMate banner" width="100%"/>
+</p>
 
 ---
 
@@ -200,9 +175,6 @@ type SyncMessage =
 ## 📄 License
 
 MIT © [peterish8](https://github.com/peterish8)
-
-<div align="center">
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:06b6d4,50:8b5cf6,100:6366f1&height=120&section=footer&animation=fadeIn" width="100%"/>
-
-</div>
+<p align="center">
+  <img src="assets/readme/footer.png" alt="CubeMate footer" width="700"/>
+</p>
