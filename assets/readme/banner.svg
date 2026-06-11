@@ -2,30 +2,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" role="img" aria-label="CubeMate banner">
   <defs>
     <radialGradient id="bgBase" cx="75%" cy="20%" r="85%">
-      <stop offset="0%" stop-color="#101100"/>
+      <stop offset="0%" stop-color="#181929"/>
       <stop offset="100%" stop-color="#0e0e0e"/>
     </radialGradient>
-    <linearGradient id="lime" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#22d3ee"/>
-      <stop offset="100%" stop-color="#0891b2"/>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8588f4"/>
+      <stop offset="100%" stop-color="#4d50bc"/>
     </linearGradient>
     <linearGradient id="border" x1="0" y1="0" x2="1200" y2="380" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#2a2a2a"/>
       <stop offset="50%" stop-color="#1c1c1c"/>
-      <stop offset="100%" stop-color="#2e3318"/>
+      <stop offset="100%" stop-color="#3c3d7c"/>
     </linearGradient>
     <clipPath id="clip"><rect x="1" y="1" width="1198" height="378" rx="23" ry="23"/></clipPath>
     <radialGradient id="orbGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.35"/>
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
+      <stop offset="55%" stop-color="#06b6d4" stop-opacity="0.12"/>
       <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="orbRing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
     <pattern id="checkGrid" width="52" height="52" patternUnits="userSpaceOnUse">
-      <rect width="26" height="26" fill="#06b6d4" opacity="0.018"/>
-      <rect x="26" y="26" width="26" height="26" fill="#06b6d4" opacity="0.018"/>
+      <rect width="26" height="26" fill="#6366f1" opacity="0.02"/>
+      <rect x="26" y="26" width="26" height="26" fill="#6366f1" opacity="0.02"/>
       <path d="M0 26H52M26 0V52" stroke="#2a2a2a" stroke-width="0.6" opacity="0.55"/>
     </pattern>
     <pattern id="diagHatch" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
-      <line x1="0" y1="0" x2="0" y2="80" stroke="#06b6d4" stroke-width="0.5" opacity="0.07"/>
+      <line x1="0" y1="0" x2="0" y2="80" stroke="#6366f1" stroke-width="0.5" opacity="0.06"/>
     </pattern>
     <radialGradient id="gridFade" cx="38%" cy="48%" r="72%">
       <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
@@ -40,21 +45,21 @@
       <rect x="1" y="1" width="1198" height="378" fill="url(#checkGrid)"/>
       <rect x="1" y="1" width="1198" height="378" fill="url(#diagHatch)"/>
     </g>
-    <rect x="1" y="1" width="3" height="376" rx="1.5" fill="url(#lime)" opacity="0.9"/>
+    <rect x="1" y="1" width="3" height="376" rx="1.5" fill="url(#accentGrad)" opacity="0.9"/>
     <g transform="translate(930, 190)">
       <circle r="88" fill="url(#orbGlow)"/>
       <circle r="72" fill="none" stroke="#1a1a1a" stroke-width="8"/>
-      <circle r="72" fill="none" stroke="#06b6d4" stroke-width="6" stroke-dasharray="18 12" opacity="0.85"/>
-      <circle r="52" fill="#0a0a0a" stroke="#06b6d4" stroke-width="1" opacity="0.35"/>
+      <circle r="72" fill="none" stroke="url(#orbRing)" stroke-width="6" stroke-dasharray="18 12" opacity="0.9"/>
+      <circle r="52" fill="#0a0a0a" stroke="#6366f1" stroke-width="1.5" opacity="0.45"/>
       <text y="6" text-anchor="middle" fill="#fff" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="22" font-weight="900">CM</text>
     </g>
     <rect x="72" y="44" width="84" height="84" rx="20" fill="#000" stroke="#262626" stroke-width="1"/>
-    <text x="114" y="98" text-anchor="middle" fill="#06b6d4" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="32" font-weight="900">CM</text>
-    <text x="72" y="210" fill="#ffffff" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="54" font-weight="900" letter-spacing="-2.5">Cube<tspan fill="url(#lime)">Mate</tspan></text>
-    <text x="72" y="256" fill="#8a8a8a" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="16" font-weight="500">P2P speedcubing timer for 1v1 races — WebRTC, WCA scrambles, Best of N matches, </text>
-    <g transform="translate(72, 298)"><rect width="168" height="40" rx="10" fill="#111" stroke="#222" stroke-width="1"/><circle cx="22" cy="20" r="4" fill="#06b6d4"/><text x="36" y="25" fill="#bbb" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="12" font-weight="600">React</text></g>
-    <g transform="translate(256, 298)"><rect width="168" height="40" rx="10" fill="#111" stroke="#222" stroke-width="1"/><text x="84" y="25" text-anchor="middle" fill="#06b6d4" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="12" font-weight="800">react</text></g>
-    <g transform="translate(440, 298)"><rect width="168" height="40" rx="10" fill="#111" stroke="rgba(200,241,53,0.25)" stroke-width="1"/><circle cx="22" cy="20" r="4" fill="#06b6d4"/><text x="36" y="25" fill="#bbb" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="12" font-weight="600">2026</text></g>
-    <text x="72" y="356" fill="#3a3a3a" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">REACT  · REACT</text>
+    <text x="114" y="98" text-anchor="middle" fill="#6366f1" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="32" font-weight="900">CM</text>
+    <text x="72" y="210" fill="#ffffff" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="54" font-weight="900" letter-spacing="-2.5">Cube<tspan fill="url(#accentGrad)">Mate</tspan></text>
+    <text x="72" y="256" fill="#8a8a8a" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="16" font-weight="500">Real-time P2P Speedcubing Races</text>
+    <g transform="translate(72, 298)"><rect width="168" height="40" rx="10" fill="#111" stroke="#222" stroke-width="1"/><circle cx="22" cy="20" r="4" fill="#6366f1"/><text x="36" y="25" fill="#bbb" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="12" font-weight="600">▲ Live on Vercel</text></g>
+    <g transform="translate(256, 298)"><rect width="168" height="40" rx="10" fill="#111" stroke="#222" stroke-width="1"/><text x="84" y="25" text-anchor="middle" fill="#6366f1" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="12" font-weight="800">GitHub</text></g>
+    <g transform="translate(440, 298)"><rect width="168" height="40" rx="10" fill="#111" stroke="#6366f1" stroke-width="1" opacity="0.35"/><circle cx="22" cy="20" r="4" fill="#6366f1"/><text x="36" y="25" fill="#bbb" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="12" font-weight="600">License</text></g>
+    <text x="72" y="356" fill="#3a3a3a" font-family="Segoe UI, Inter, system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">REACT 18  · REACT  · EXPO</text>
   </g>
 </svg>

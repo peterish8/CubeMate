@@ -1,0 +1,14 @@
+{
+  "theme": {
+    "primary": "#6366f1",
+    "light": "#8588f4",
+    "dark": "#4d50bc",
+    "secondary": "#8b5cf6",
+    "tertiary": "#06b6d4",
+    "bg1": "#181929",
+    "bg2": "#0e0e0e",
+    "borderTint": "#3c3d7c",
+    "mode": "dark"
+  },
+  "name": "CubeMate"
+}
